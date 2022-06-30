@@ -1,6 +1,7 @@
 import numpy as np
 import math
 
+import phot
 from phot.values import constants, globals
 from phot.utils import logger, mathutils
 from .lightwave import Lightwave
@@ -25,7 +26,7 @@ class Fiber:
     _DEF_PHI_NLP = 0.003  # Default X.dphimax [rad] for NLP & ~X.dphi1fwm
 
     def __init__(self,
-                 length: int = 10E3,
+                 length: int = 10000,
                  lam: int = 1550,
                  alpha_b: float = 1,
                  dispersion: float = 17,
@@ -67,13 +68,14 @@ class Fiber:
         self._dphi_max = None
         self._bandwidth = None
         self._alpha_linear = None
+        self._gpu = False
 
-    def transmit(self, lightwave: Lightwave):
+    def transmit(self, lightwave: Lightwave, gpu: bool = False):
+        self._gpu = gpu
         if np.shape(lightwave.field)[1] == 2 * np.size(lightwave.lam):  # dual polarization
             self._isy = True
         else:
             self._isy = False
-        num_fft = np.shape(lightwave.field)[0]
 
         if np.size(lightwave.lam) > 1:
             self._is_unique = False  # separate-field propagation
@@ -446,7 +448,8 @@ class Fiber:
         return dzb, n_index
 
     def _linear_step(self, linear: Linear, betat, dzb, n_index, field: np.ndarray) -> np.ndarray:
-
+        if self._gpu:
+            field = phot.to_gpu(field)
         field = np.fft.fft(field, axis=0)
         for nt in range(np.size(dzb)):  # the step is made of multi-waveplates
             if np.isscalar(n_index):
@@ -457,7 +460,10 @@ class Fiber:
             if linear.is_unique:
                 if linear.is_scalar:
                     field = field * np.conj(linear.matin)
-                    field = field * mathutils.fast_exp(-(betat + linear.db0) * dzb)
+                    temp = mathutils.fast_exp(-(betat + linear.db0) * dzb)
+                    if self._gpu:
+                        temp = phot.to_gpu(temp)
+                    field = field * temp
                     field = field * linear.matin
                 else:
                     field = field @ np.conj(linear.matin[:, :, index])  # apply unitary matrix
@@ -468,6 +474,8 @@ class Fiber:
                 field = field * mathutils.fast_exp(-(betat + linear.db0[index, :]) * dzb[nt])
                 field = _fast_matmul(field, linear.matin[:, :, index].T)  # return in the reference system
         field = np.fft.ifft(field, axis=0)
+        if self._gpu:
+            field = phot.to_cpu(field)
         return field
 
     def _nonlinear_step(self, field: np.ndarray, dz: float) -> np.ndarray:

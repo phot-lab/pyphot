@@ -1,5 +1,5 @@
 class FormatInfo:
-    def __init__(self, digit=None, family=None, sym_mean=None, sym_var=None):
+    def __init__(self, digit: int = None, family: str = None, sym_mean: int = None, sym_var: int = None):
         self.digit = digit
         self.family = family
         self.sym_mean = sym_mean

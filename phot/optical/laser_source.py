@@ -13,7 +13,7 @@ class LaserSource:
     """
 
     def __init__(self,
-                 power_tx: any,
+                 power_tx,
                  lam: int,
                  num_pol: int,
                  line_width=None,

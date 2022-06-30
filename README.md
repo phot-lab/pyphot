@@ -18,3 +18,11 @@ import phot
 
 Then you can call functions of PyPhot by `phot.init_globals()`, `phot.LaserSource()`, etc. There is an **example.py** under the root directory showing how to use our API. Please read it carefully.
 
+### Generate requirements.txt
+
+**requirements.txt** is useful for installation of related dependencies, you can generate it by command line tool **pipreqs**, turn to the root dir and enter this command to do it:
+
+```shell
+pipreqs . --mode gt --force
+```
+

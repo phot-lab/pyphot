@@ -58,3 +58,32 @@ def interp(array, factor):
     x = np.arange(array.size)
     store = np.linspace(x[0], x[-1], np.size(x) * factor)
     return np.interp(store, x, array)
+
+
+# author - Mathuranathan Viswanathan (gaussianwaves.com)
+# This code is part of the book Digital Modulations using Python
+# https://www.gaussianwaves.com/2015/06/how-to-generate-awgn-noise-in-matlaboctave-without-using-in-built-awgn-function/
+def awgn(s, snr_db, factor=1):
+    """
+    AWGN channel
+    Add AWGN noise to input signal. The function adds AWGN noise vector to signal 's' to generate a resulting signal vector 'r' of specified SNR in dB. It also
+    returns the noise vector 'n' that is added to the signal 's' and the power spectral density N0 of noise added
+    Parameters:
+        s : input/transmitted signal vector
+        snr_db : desired signal to noise ratio (expressed in dB) for the received signal
+        factor : oversampling factor (applicable for waveform simulation) default L = 1.
+    Returns:
+        r : received signal vector (r=s+n)
+    """
+    gamma = 10 ** (snr_db / 10)  # SNR to linear scale
+    if s.ndim == 1:  # if s is single dimensional vector
+        P = factor * sum(abs(s) ** 2) / len(s)  # Actual power in the vector
+    else:  # multi-dimensional signals like MFSK
+        P = factor * sum(sum(abs(s) ** 2)) / len(s)  # if s is a matrix [MxN]
+    n0 = P / gamma  # Find the noise spectral density
+    if np.isrealobj(s):  # check if input is real/complex object type
+        n = np.sqrt(n0 / 2) * np.random.standard_normal(s.shape)  # computed noise
+    else:
+        n = np.sqrt(n0 / 2) * (np.random.standard_normal(s.shape) + 1j * np.random.standard_normal(s.shape))
+    r = s + n  # received signal
+    return r
