@@ -13,9 +13,9 @@ class LaserSource:
     """
 
     def __init__(self,
-                 power_tx,
-                 lam: int,
-                 num_pol: int,
+                 power,  # power in linear scale [mW]
+                 lam: int = 1550,
+                 num_pol: int = 1,
                  line_width=None,
                  n0: float = None
                  ) -> None:
@@ -29,7 +29,7 @@ class LaserSource:
         A Wiener phase noise with such a line_width is added to the phase of Lightwave.
         """
 
-        self.num_power = np.size(power_tx)  # Number of the power of transmit channel
+        self.num_power = np.size(power)  # Number of the power of transmit channel
         self.num_carr = np.size(lam)  # Number of carriers
         self.num_pol = num_pol
         self.lam = lam
@@ -46,12 +46,12 @@ class LaserSource:
             self.line_width = 0
 
         if self.num_power == 1:
-            if np.isscalar(power_tx):
-                self.power = np.full(self.num_carr, power_tx)
+            if np.isscalar(power):
+                self.power = np.full(self.num_carr, power)
             else:
-                self.power = np.full(self.num_carr, power_tx[0])
+                self.power = np.full(self.num_carr, power[0])
         else:
-            self.power = power_tx
+            self.power = power
 
     def gen_light(self) -> Lightwave:
         num_samp = globals.NUM_SAMP

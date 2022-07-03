@@ -6,47 +6,58 @@ from .signal import my_filter
 from .lightwave import Lightwave
 
 
-class RxParam:
-    def __init__(self, mod_format: str, filter_type: str = None, bandwidth=None):
-        self.mod_format = mod_format
-        self.filter_type = filter_type
-        self.bandwidth = bandwidth  # OBPF bandwidth normalized to SYMBRATE
-        self.optic_param = None  # optical filter extra parameters
-        self.mz_delay = None  # interferometer delay
-        self.disp_acc = None  # post compensating fiber accumulated dispersion [ps/nm].
-        # The fiber is inserted before the optical filter.
-        self.slope_acc = None  # post compensating fiber accumulated slope [ps/nm^2]
-        self.lam = None  # wavelength [nm] at which the post compensating fiber
-        # has an accumulated dispersion equal to X.dcum
+# class RxParam:
+#     def __init__(self, mod_format: str, filter_type: str = None, bandwidth=None):
+#         self.mod_format = mod_format
+#         self.filter_type = filter_type
+#         self.bandwidth = bandwidth  # OBPF bandwidth normalized to SYMBRATE
+#         self.mz_delay = None  # interferometer delay
+#         self.disp_acc = None  # post compensating fiber accumulated dispersion [ps/nm].
+#         # The fiber is inserted before the optical filter.
+#         self.slope_acc = None  # post compensating fiber accumulated slope [ps/nm^2]
+#         self.lam = None  # wavelength [nm] at which the post compensating fiber
+#         # has an accumulated dispersion equal to X.dcum
 
 
 class RxFrontend:
-    def __init__(self, lam, rx_param: RxParam):
-        if rx_param.optic_param is None:
-            rx_param.optic_param = 0  # dummy value
-        if rx_param.mz_delay is None:
-            rx_param.mz_delay = 1  # default interferometer delay: 1 symbol
-        elif rx_param.mz_delay <= 0 or rx_param.mz_delay > 1:
+    def __init__(self, filter_type: str = None,
+                 lam: int = 1550,
+                 mod_format: str = None,
+                 bandwidth=None,
+                 mz_delay: int = 1,  # default interferometer delay: 1 symbol
+                 optic_param=None  # # optical filter extra parameters
+                 ):
+        self.bandwidth = bandwidth  # OBPF bandwidth normalized to SYMBRATE
+        self.filter_type = filter_type
+        self.mod_format = mod_format
+        self.optic_param = optic_param
+        self.mz_delay = mz_delay  # interferometer delay
+        self.disp_accum = None  # post compensating fiber accumulated dispersion [ps/nm].
+        # The fiber is inserted before the optical filter.
+        self.slope_accum = None  # post compensating fiber accumulated slope [ps/nm^2]
+
+        if self.optic_param is None:
+            self.optic_param = 0  # dummy value
+        if self.mz_delay <= 0 or self.mz_delay > 1:
             raise RuntimeError("The delay of the interferometer must be  0 < mzdel <= 1")
-        if rx_param.mod_format is None:
+        if self.mod_format is None:
             raise RuntimeError("Missing modulation format")
 
         self._lam = lam
         self._sym_rate = globals._sym_rate
-        self._rx_param = rx_param
 
     def receive(self, lightwave: Lightwave) -> np.ndarray:
 
         # Create linear optical filters: OBPF (+fiber)
         freq_norm = globals.FN / self._sym_rate
-        if self._rx_param.disp_acc is not None:
-            hf = _post_fiber(self._rx_param.disp_acc, self._rx_param.slope_acc, self._rx_param.lam, self._lam,
+        if self.disp_accum is not None:
+            hf = _post_fiber(self.disp_accum, self.slope_accum, self._lam, self._lam,
                              lightwave.lam)
-            hf = hf * my_filter(self._rx_param.filter_type, freq_norm, 0.5 * self._rx_param.bandwidth,
-                                self._rx_param.optic_param)
+            hf = hf * my_filter(self.filter_type, freq_norm, 0.5 * self.bandwidth,
+                                self.optic_param)
         else:
-            hf = my_filter(self._rx_param.filter_type, freq_norm, 0.5 * self._rx_param.bandwidth,
-                           self._rx_param.optic_param)
+            hf = my_filter(self.filter_type, freq_norm, 0.5 * self.bandwidth,
+                           self.optic_param)
 
         # 1. apply optical filter
         lightwave = _filter_env(lightwave, self._lam, hf)
@@ -54,8 +65,29 @@ class RxFrontend:
         # 2. optical to electrical conversion
         nt = globals.SAMP_FREQ / self._sym_rate  # number of points per symbol
 
-        iric = optic2elec(lightwave, nt, self._rx_param)
+        iric = self._optic2elec(lightwave, nt)
 
+        return iric
+
+    def _optic2elec(self, lightwave: Lightwave, num_pts) -> np.ndarray:
+        num_fft = np.size(lightwave.field)
+        if self.mod_format == "ook":
+            iric = np.sum(np.square(np.abs(lightwave.field)), axis=1)  # PD. sum is over polarizations
+        elif self.mod_format == "dpsk":
+            delay = mathutils.n_mod(np.arange(num_fft) - round(self.mz_delay * num_pts),
+                                    num_fft)  # interferometer delay
+
+            iric = np.sum(np.real(lightwave.field * np.conj(lightwave.field[delay])), axis=1)  # MZI + PD
+        elif self.mod_format == "dqpsk":
+            delay = mathutils.n_mod(np.arange(num_fft) - round(self.mz_delay * num_pts),
+                                    num_fft)  # interferometer delay
+            iric_real = np.sum(
+                mathutils.fast_exp(-math.pi / 4) * np.real(lightwave.field * np.conj(lightwave.field[delay])), axis=1)
+            iric_imag = np.sum(
+                mathutils.fast_exp(math.pi / 4) * np.real(lightwave.field * np.conj(lightwave.field[delay])), axis=1)
+            iric = iric_real + iric_imag * 1j
+        else:  # coherent detection
+            iric = lightwave.field
         return iric
 
 
@@ -97,23 +129,3 @@ def _filter_env(lightwave: Lightwave, lam, hf) -> Lightwave:
     lightwave.field = np.roll(lightwave.field, nd_fn)  # undo what did in MULTIPLEXER
     lightwave.field = np.fft.ifft(hf * lightwave.field, axis=0)
     return lightwave
-
-
-def optic2elec(lightwave: Lightwave, nt, rx_param: RxParam) -> np.ndarray:
-    num_fft = np.size(lightwave.field)
-    if rx_param.mod_format == "ook":
-        iric = np.sum(np.square(np.abs(lightwave.field)), axis=1)  # PD. sum is over polarizations
-    elif rx_param.mod_format == "dpsk":
-        delay = mathutils.n_mod(np.arange(num_fft) - round(rx_param.mz_delay * nt), num_fft)  # interferometer delay
-
-        iric = np.sum(np.real(lightwave.field * np.conj(lightwave.field[delay])), axis=1)  # MZI + PD
-    elif rx_param.mod_format == "dqpsk":
-        delay = mathutils.n_mod(np.arange(num_fft) - round(rx_param.mz_delay * nt), num_fft)  # interferometer delay
-        iric_real = np.sum(
-            mathutils.fast_exp(-math.pi / 4) * np.real(lightwave.field * np.conj(lightwave.field[delay])), axis=1)
-        iric_imag = np.sum(
-            mathutils.fast_exp(math.pi / 4) * np.real(lightwave.field * np.conj(lightwave.field[delay])), axis=1)
-        iric = iric_real + iric_imag * 1j
-    else:  # coherent detection
-        iric = lightwave.field
-    return iric

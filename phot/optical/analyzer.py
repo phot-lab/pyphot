@@ -16,7 +16,6 @@ class Analyzer:
             if math.floor(num_pt) != num_pt:
                 raise RuntimeError("Number of points per symbol is not an integer.")
             num_sym = globals.NUM_SAMP / num_pt
-            pass
         else:
             raise RuntimeError("no eye at one samples per symbol")
         num_pol = np.shape(sig)[1]
@@ -68,4 +67,5 @@ def plot_constellation(sig: np.ndarray) -> None:
     plt.scatter(axis_y, axis_x)
     plt.xlabel('Real')
     plt.ylabel('Imag')
+    plt.grid()
     plt.show()
