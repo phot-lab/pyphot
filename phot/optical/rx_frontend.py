@@ -6,19 +6,6 @@ from .signal import my_filter
 from .lightwave import Lightwave
 
 
-# class RxParam:
-#     def __init__(self, mod_format: str, filter_type: str = None, bandwidth=None):
-#         self.mod_format = mod_format
-#         self.filter_type = filter_type
-#         self.bandwidth = bandwidth  # OBPF bandwidth normalized to SYMBRATE
-#         self.mz_delay = None  # interferometer delay
-#         self.disp_acc = None  # post compensating fiber accumulated dispersion [ps/nm].
-#         # The fiber is inserted before the optical filter.
-#         self.slope_acc = None  # post compensating fiber accumulated slope [ps/nm^2]
-#         self.lam = None  # wavelength [nm] at which the post compensating fiber
-#         # has an accumulated dispersion equal to X.dcum
-
-
 class RxFrontend:
     def __init__(self, filter_type: str = None,
                  lam: int = 1550,

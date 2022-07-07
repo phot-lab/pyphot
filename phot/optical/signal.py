@@ -3,11 +3,24 @@ import math
 
 
 def up_sample(array, n):
+    if isinstance(n, float):
+        if n.is_integer():
+            n = int(n)
+        else:
+            raise RuntimeError('Upsample coefficient must be integer')
     rows, cols = array.shape
     result = np.zeros((rows * n, cols), dtype=complex)
     for i in range(rows):
         for j in range(cols):
             result[i * n][j] = array[i][j]
+    return result
+
+
+def down_sample(array: np.ndarray):
+    rows, cols = np.shape(array)
+    result = np.zeros((rows, 1), dtype=complex)
+    for i in range(rows):
+        result[i][0] = max(array[i, :], key=lambda x: np.abs(x))
     return result
 
 
@@ -41,8 +54,8 @@ def my_filter(fileter_type: str, freq, bandwidth, param=None):
             raise RuntimeError("It must be 0<=roll-off<=1")
         hf = np.zeros(x.shape)
         hf[np.abs(x) <= 0.5 * (1 - param)] = 1
-        ii = 0.5 * (1 - param) < np.abs(x) <= 0.5 * (1 + param)
-        hf[ii] = np.sqrt(0.5 * (1 + np.cos(math.pi / param * (np.abs(x[ii])) - 0.5 * (1 - param))))
+        ii = (0.5 * (1 - param) < np.abs(x)) & (np.abs(x) <= 0.5 * (1 + param))
+        hf[ii] = np.sqrt(0.5 * (1 + np.cos(math.pi / param * (np.abs(x[ii]) - 0.5 * (1 - param)))))
     else:
         raise RuntimeError("the filter ftype does not exist.")
     return hf

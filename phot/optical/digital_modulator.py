@@ -1,6 +1,7 @@
 from phot.values import globals
 from phot.utils import mathutils, logger
 from phot.optical import signal, format
+from .sample import seq2samp
 import numpy as np
 import math
 
@@ -128,6 +129,7 @@ class DigitalModulator:
                 if not np.isrealobj(self.fir_taps):
                     raise RuntimeError("FIR taps must be real.")
                 self.fir_taps = np.reshape(self.fir_taps, (-1, 1), order='F')
+
         aku = signal.up_sample(ak, num_samp)
         aku = aku.ravel(order='F')
         aku = np.fft.fft(aku[0:num_samp * num_sym])  # truncate if necessary
@@ -149,7 +151,6 @@ class DigitalModulator:
                 "It is impossible to get the desired number of samples with the given pattern and sampling rate")
         elif np.size(elec) > num_fft:
             elec = elec[np.ceil(np.arange(0, num_fft * nd, nd))]
-
         # normalize to unit power
         if self.norm == "iid":  # i.i.d. symbols
             # See [3], power spectra of linearly modulated signals
@@ -202,28 +203,3 @@ class DigitalModulator:
         else:
             raise RuntimeError("The pulse ptype does not exist")
         return el_pulse
-
-
-def seq2samp(seq, mod_format):
-    format_info = format.get_format_info(mod_format)
-    num_bits = math.log2(format_info.digit)
-    rows, cols = np.shape(seq)  # cols == 1: symbol. cols == 2: bits
-    if mod_format == "randn":
-        return seq
-    seq = mathutils.dec2bin(seq, num_bits)
-
-    # From now on, pat is a binary matrix
-    m = math.pow(2, cols)  # constellation size
-
-    if format_info.family == "ook":
-        level = 2 * seq  # average energy: 1
-    elif mod_format == "bpsk" or mod_format == "dpsk" or mod_format == "psbt" or (mod_format == "psk" and m == 2):
-        level = 2 * seq - 1  # average energy: 1
-    elif mod_format == "qpsk" or mod_format == "dqpsk":
-        level = 2 * seq - 1  # drive iqmodulator with QPSK
-        level = (level[:, 0] + level[:, 1] * 1j) / math.sqrt(2)  # average energy: 1
-        level = np.reshape(level, (-1, 1))
-    else:
-        raise RuntimeError("Unknown modulation format")
-
-    return level
