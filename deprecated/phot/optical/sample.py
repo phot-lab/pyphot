@@ -1,6 +1,6 @@
 import math
 import numpy as np
-from phot.utils import mathutils
+from deprecated.phot.utils import mathutils
 from .format import get_format_info
 
 

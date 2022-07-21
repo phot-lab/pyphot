@@ -1,9 +1,9 @@
 import numpy as np
 import math
 
-import phot
-from phot.values import constants, globals
-from phot.utils import logger, mathutils
+from ... import phot
+from deprecated.phot.values import constants, globals
+from deprecated.phot.utils import logger, mathutils
 from .lightwave import Lightwave
 from typing import Tuple
 

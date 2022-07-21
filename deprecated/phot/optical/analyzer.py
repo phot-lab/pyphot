@@ -1,5 +1,5 @@
 import numpy as np
-from phot.values import globals
+from deprecated.phot.values import globals
 import math
 from .format import get_format_info
 import matplotlib.pyplot as plt

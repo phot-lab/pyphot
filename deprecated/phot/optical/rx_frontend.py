@@ -1,7 +1,7 @@
 import numpy as np
-from phot.values import globals, constants
+from deprecated.phot.values import globals, constants
 import math
-from phot.utils import mathutils
+from deprecated.phot.utils import mathutils
 from .signal import my_filter
 from .lightwave import Lightwave
 

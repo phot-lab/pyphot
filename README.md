@@ -16,13 +16,16 @@ The usage of this library is very simple, just create a python script under the 
 import phot
 ```
 
-Then you can call functions of PyPhot by `phot.init_globals()`, `phot.LaserSource()`, etc. There is an **example.py** under the root directory showing how to use our API. Please read it carefully.
+There is an **qam_b2b_dsp.py** under the root directory showing how to use our API. Please read it carefully.
 
 ### Generate requirements.txt
 
-**requirements.txt** is useful for installation of related dependencies, you can generate it by command line tool **pipreqs**, turn to the root dir and enter this command to do it:
+**requirements.txt** is useful for installation of related dependencies, you can generate it by command line tool **pipreqs**, enter the root directory and execute this command:
 
 ```shell
 pipreqs . --mode gt --force --ignore ./test
 ```
 
+### Deprecated phot module
+
+The deprecated phot module is in `deprecated` folder. It is just reserved for developers. If you are user, just ignore it.

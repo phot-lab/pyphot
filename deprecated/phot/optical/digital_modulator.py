@@ -1,6 +1,7 @@
-from phot.values import globals
-from phot.utils import mathutils, logger
-from phot.optical import signal, format
+from deprecated.phot.values import globals
+from deprecated.phot.utils import mathutils, logger
+from deprecated.phot.optical import signal
+from . import format
 from .sample import seq2samp
 import numpy as np
 import math

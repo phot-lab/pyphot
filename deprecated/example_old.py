@@ -1,5 +1,5 @@
-import phot
 import math
+from deprecated import phot
 
 if __name__ == '__main__':
     # Init global parameters
@@ -15,7 +15,7 @@ if __name__ == '__main__':
     lightwave = laser_source.gen_light()
 
     # Generate random number sequence
-    seq = phot.gen_seq('rand', mod_format, seed=1)
+    seq = phot.gen_seq('rand', mod_format)
 
     # Digital modulator
     digit_mod = phot.DigitalModulator(mod_format=mod_format, pulse_type='rootrc', rolloff=rolloff)

@@ -1,13 +1,11 @@
-import sys
-
 import numpy as np
 import math
-from phot.values import globals
+from deprecated.phot.values import globals
 from .signal import my_filter
 from .sample import seq2samp
 from .signal import up_sample
-from phot.utils import mathutils
-from phot.utils import logger
+from deprecated.phot.utils import mathutils
+from deprecated.phot.utils import logger
 
 
 class RxDsp:
@@ -55,7 +53,7 @@ class RxDsp:
         # 3. Sample (or downsample and MIMO)
         ak = elec_sig[0::int(self._num_pts), :]
 
-        # 4. automatic gain control
+        # 4. Automatic gain control
         symbols, gain_factor = agc(self.seq, ak, self.mod_format)
 
         return symbols, gain_factor

@@ -1,6 +1,6 @@
 import numpy as np
-from phot.values import globals
-from phot.utils import mathutils
+from deprecated.phot.values import globals
+from deprecated.phot.utils import mathutils
 from .lightwave import Lightwave
 import math
 

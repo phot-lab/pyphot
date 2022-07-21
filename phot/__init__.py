@@ -1,3 +1,2 @@
-from .values import *
+from .utils import *
 from .optical import *
-from .utils import to_gpu, to_cpu

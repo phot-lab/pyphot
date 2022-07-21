@@ -7,7 +7,7 @@ def up_sample(array, n):
         if n.is_integer():
             n = int(n)
         else:
-            raise RuntimeError('Upsample coefficient must be integer')
+            raise RuntimeError('Up-sample coefficient must be integer')
     rows, cols = array.shape
     result = np.zeros((rows * n, cols), dtype=complex)
     for i in range(rows):
