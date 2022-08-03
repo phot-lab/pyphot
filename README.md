@@ -10,13 +10,7 @@ First, you need to install necessary dependencies, open the CLI and enter this c
 pip3 install -r requirements.txt
 ```
 
-The usage of this library is very simple, just create a python script under the root directory and use the following code to import PyPhot
-
-```python
-import phot
-```
-
-There is an **qam_b2b_dsp.py** under the root directory showing how to use our API. Please read it carefully.
+There is an **example.py** under the root directory showing how to use our API (for PyPhotEngine). Please read it carefully.
 
 ### Generate requirements.txt
 

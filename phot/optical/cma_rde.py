@@ -57,18 +57,18 @@ def cma_rde(input_x_i, input_x_q, input_y_i, input_y_q, num_tap, num_update_cma,
     num_output = floor((num_length - num_tap + 1) / samples_per_symbol)
     num_update = num_update_cma + num_output  # 计算全部的信号长度
 
-    w_x = np.zeros((2 * num_tap, num_update + 1), dtype=complex)
-    w_y = np.zeros((2 * num_tap, num_update + 1), dtype=complex)
+    w_x = np.zeros((2 * num_tap, num_update + 1), dtype=np.complex128)
+    w_y = np.zeros((2 * num_tap, num_update + 1), dtype=np.complex128)
 
     # 将各个FIR滤波器系数组合
     w_x[:, 0] = np.concatenate((initial_weight_xx, initial_weight_yx), axis=0).ravel()
     w_y[:, 0] = np.concatenate((initial_weight_xy, initial_weight_yy), axis=0).ravel()
 
-    e_x = np.zeros(num_update, dtype=complex)
-    e_y = np.zeros(num_update, dtype=complex)
+    e_x = np.zeros(num_update, dtype=np.complex128)
+    e_y = np.zeros(num_update, dtype=np.complex128)
 
-    output_x = np.zeros((num_output, 1), dtype=complex)
-    output_y = np.zeros((num_output, 1), dtype=complex)
+    output_x = np.zeros((num_output, 1), dtype=np.complex128)
+    output_y = np.zeros((num_output, 1), dtype=np.complex128)
 
     # 预均衡 Convergence
     # 采用CMA算法进行抽头系数预收敛

@@ -1,0 +1,41 @@
+import numpy as np
+from ..optical import fine_synchronize, ber_count
+from commpy.modulation import QAMModem
+
+
+class BER:
+    def __init__(self, bits_per_symbol):
+        self.bits_per_symbol = bits_per_symbol
+
+    def count(self, signal_x, signal_y, prev_signal_x, prev_signal_y):
+        """ 计算误码率 """
+
+        """ 再进行一个帧同步，因为经过均衡器会存在符号的一些舍弃，因此在计算误码率（BER）之前需要再一次帧同步 """
+
+        # 对发射端信号跟均衡后信号进行同步
+        start_index_x_1 = fine_synchronize(prev_signal_x[:, 0].T, signal_x[0:10000, 0].reshape((1, -1)))
+
+        # 对发射端信号利用自带函数进行移动
+        prev_signal_x = np.roll(prev_signal_x, -start_index_x_1)
+        prev_signal_y = np.roll(prev_signal_y, -start_index_x_1)
+
+        # 变为16的倍数
+        signal_x = signal_x[:-1]
+        signal_y = signal_y[:-1]
+
+        # 使得均衡后信号与发射端信号一样长度
+        prev_signal_x = prev_signal_x[0:len(signal_x), :]
+        prev_signal_y = prev_signal_y[0:len(signal_y), :]
+
+        """ BER COUNT  对信号进行误码率计算，将接收信号与发射信号转化为格雷编码，比较各个码元的正确率 """
+
+        modem = QAMModem(2 ** self.bits_per_symbol)
+
+        tx_bits = modem.demodulate(
+            np.concatenate((np.reshape(prev_signal_x, (-1, 1)), np.reshape(prev_signal_y, (-1, 1))), axis=0).ravel(),
+            demod_type='hard')
+        rx_bits = modem.demodulate(
+            np.concatenate((np.reshape(signal_x, (-1, 1)), np.reshape(signal_y, (-1, 1))), axis=0).ravel(),
+            demod_type='hard')
+        ber, q_db = ber_count(rx_bits, tx_bits)  # 比较码元的正确率
+        print('Calculated overall bits error is {:.5f}'.format(ber))

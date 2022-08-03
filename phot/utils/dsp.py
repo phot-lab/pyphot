@@ -1,7 +1,9 @@
 import numpy as np
+from numba import jit
 
 
 # https://stackoverflow.com/questions/15983986/convert-quantiz-function-to-python
+@jit(nopython=True)
 def quantize(signal, partitions, codebook):
     indices = np.zeros(len(signal))
     quanta = np.zeros(len(signal))

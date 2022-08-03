@@ -1,5 +1,6 @@
 from .laser_source import LaserSource
 from .generator import gen_seq
+from .lightwave import Lightwave
 from .digital_modulator import DigitalModulator
 from .mz_modulator import mz_modulator
 from .fiber import Fiber

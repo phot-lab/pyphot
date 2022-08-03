@@ -1,0 +1,41 @@
+import numpy as np
+from ..optical import cma_rde, fre_offset_compensation_fft
+from ..utils import plot_scatter
+
+
+class AdaptiveEqualizer:
+    def __init__(self, num_tap, cma_convergence, ref_power_cma, step_size_cma, step_size_rde, up_sampling_factor,
+                 bits_per_symbol, total_baud):
+        self.num_tap = num_tap
+        self.cma_convergence = cma_convergence
+        self.ref_power_cma = ref_power_cma
+        self.step_size_cma = step_size_cma
+        self.step_size_rde = step_size_rde
+        self.up_sampling_factor = up_sampling_factor
+        self.bits_per_symbol = bits_per_symbol
+        self.total_baud = total_baud
+
+    def equalize(self, signal_x, signal_y):
+        input_x_i = np.real(signal_x)  # 求出接收端X偏振的实部信号
+        input_x_q = np.imag(signal_x)  # 求出接收端X偏振的虚部信号
+        input_y_i = np.real(signal_y)  # 求出接收端Y偏振的实部信号
+        input_y_q = np.imag(signal_y)  # 求出接收端Y偏振的实部信号
+
+        # 对信号采用CMA-RDE进行自适应均衡
+        equalization_matrix_x, equalization_matrix_y = cma_rde(input_x_i, input_x_q, input_y_i, input_y_q, self.num_tap,
+                                                               self.cma_convergence, self.ref_power_cma,
+                                                               self.step_size_cma, self.step_size_rde,
+                                                               self.up_sampling_factor, self.bits_per_symbol)
+        plot_scatter(equalization_matrix_x, pt_size=1)
+
+        # 此处均衡器内部存在一个下采样，因此均衡器出来后信号回到一个符号一个样本的采样率，也就是现在的采样率等于符号率
+
+        """ 均衡后进行精确的频偏估计和补偿 采用FFT-FOE算法，与前面的粗估计一样，防止前面粗估计没补偿完全，此处做一个补充 """
+
+        # 利用FFT-FOE算法对信号的频偏进行估计与补偿
+        equalization_matrix_x, equalization_matrix_y, fre_offset = fre_offset_compensation_fft(equalization_matrix_x,
+                                                                                               equalization_matrix_y,
+                                                                                               self.total_baud)
+        print('Estimated Accurate Frequency offset: {}'.format(fre_offset))
+
+        return equalization_matrix_x, equalization_matrix_y

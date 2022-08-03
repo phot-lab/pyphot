@@ -8,7 +8,7 @@ def up_sample(array, n):
             n = int(n)
         else:
             raise RuntimeError('Up-sample coefficient must be integer')
-    rows, cols = array.shape
+    rows, cols = array.tx_shape
     result = np.zeros((rows * n, cols), dtype=complex)
     for i in range(rows):
         for j in range(cols):
@@ -95,8 +95,8 @@ def awgn(s, snr_db, factor=1):
         P = factor * sum(sum(abs(s) ** 2)) / len(s)  # if s is a matrix [MxN]
     n0 = P / gamma  # Find the noise spectral density
     if np.isrealobj(s):  # check if input is real/complex object type
-        n = np.sqrt(n0 / 2) * np.random.standard_normal(s.shape)  # computed noise
+        n = np.sqrt(n0 / 2) * np.random.standard_normal(s.tx_shape)  # computed noise
     else:
-        n = np.sqrt(n0 / 2) * (np.random.standard_normal(s.shape) + 1j * np.random.standard_normal(s.shape))
+        n = np.sqrt(n0 / 2) * (np.random.standard_normal(s.tx_shape) + 1j * np.random.standard_normal(s.tx_shape))
     r = s + n  # received signal
     return r
