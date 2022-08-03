@@ -9,7 +9,7 @@ class DacNoise:
         self.sampling_rate = sampling_rate
         self.dac_resolution_bits = dac_resolution_bits
 
-    def add(self, signal):
+    def _add(self, signal):
         # 重采样信号采样率为DAC的采样率，模拟进入DAC
         signal = resample_poly(signal, int(self.sampling_rate_awg), int(self.sampling_rate))
 
@@ -23,3 +23,6 @@ class DacNoise:
         signal = resample_poly(signal, int(self.sampling_rate), int(self.sampling_rate_awg)).reshape((-1, 1))
 
         return signal
+
+    def add(self, signal_x, signal_y):
+        return self._add(signal_x), self._add(signal_y)

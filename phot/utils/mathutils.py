@@ -12,7 +12,7 @@ def gen_bits(shape: np.shape, seed=None):
     Returns:
 
     """
-    rng = np.random.RandomState(seed)
-    arr = rng.rand(shape[0], shape[1])
-    arr = np.round(arr).astype(dtype=int)
-    return arr
+    rng = np.random.default_rng(seed=seed)
+    data_x = rng.integers(0, 2, shape)  # 采用randint函数随机产生0 1码元序列x
+    data_y = rng.integers(0, 2, shape)  # 采用randint函数随机产生0 1码元序列y
+    return data_x, data_y
