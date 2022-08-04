@@ -14,7 +14,7 @@ if __name__ == '__main__':
 
     # 首先产生发射端X/Y双偏振信号
 
-    data_x, data_y = phot.gen_bits((num_symbols * bits_per_symbol, 1))  # 生成两列随机二进制序列
+    data_x, data_y = phot.gen_bits(num_symbols * bits_per_symbol)  # 生成两列随机二进制序列
 
     # QAM调制器
     modem = phot.Modem(bits_per_symbol)
@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     """ 加入发射端激光器产生的相位噪声 """
     linewidth_tx = 150e3  # 激光器线宽
-    noise = phot.PhaseNoise(len(signal_x), sampling_rate / total_baud, linewidth_tx, total_baud)
+    noise = phot.PhaseNoise(sampling_rate / total_baud, linewidth_tx, total_baud)
 
     signal_x, signal_y = noise.add(signal_x, signal_y)
 
@@ -52,7 +52,7 @@ if __name__ == '__main__':
 
     """ 添加接收端激光器产生的相位噪声 """
     linewidth_rx = 150e3  # 激光器线宽
-    noise = phot.PhaseNoise(len(signal_x), sampling_rate / total_baud, linewidth_rx, total_baud)
+    noise = phot.PhaseNoise(sampling_rate / total_baud, linewidth_rx, total_baud)
 
     signal_x, signal_y = noise.add(signal_x, signal_y)
 
