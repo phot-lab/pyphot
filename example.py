@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     frequency_offset = 2e9  # 设置频偏，一般激光器的频偏范围为 -3G~3G Hz
 
-    signal_x, signal_y = phot.add_freq_offset(frequency_offset, sampling_rate, signal_x, signal_y)
+    signal_x, signal_y = phot.add_freq_offset(signal_x, signal_y, frequency_offset, sampling_rate)
 
     """ 模拟接收机造成的I/Q失衡，主要考虑幅度失衡和相位失衡，这里将两者都加在虚部上 """
 

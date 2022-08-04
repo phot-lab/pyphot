@@ -3,10 +3,8 @@ from scipy.signal import resample_poly
 from ..optical import adc_resolution, gram_schmidt_orthogonalize, fre_offset_compensation_fft
 
 
-def add_freq_offset(frequency_offset, sampling_rate, signal_x, signal_y):
+def add_freq_offset(signal_x, signal_y, frequency_offset, sampling_rate):
     """ 添加收发端激光器造成的频偏，就是发射端激光器和接收端激光器的中心频率的偏移差 """
-
-    frequency_offset = 2e9  # 设置频偏，一般激光器的频偏范围为 -3G~3G Hz
 
     # 2*pi*N*V*T   通过公式计算频偏造成的相位，N表示每个符号对应的序号，[1:length(TxSignal_X)]
     phase_carrier_offset = (
