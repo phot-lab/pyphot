@@ -1,6 +1,7 @@
 import numpy as np
 from ..optical import fine_synchronize, ber_count
 from commpy.modulation import QAMModem
+from phot import logger
 
 
 class BER:
@@ -38,4 +39,4 @@ class BER:
             np.concatenate((np.reshape(signal_x, (-1, 1)), np.reshape(signal_y, (-1, 1))), axis=0).ravel(),
             demod_type='hard')
         ber, q_db = ber_count(rx_bits, tx_bits)  # 比较码元的正确率
-        print('Calculated overall bits error is {:.5f}'.format(ber))
+        logger.info('Calculated overall bits error is {:.5f}'.format(ber))

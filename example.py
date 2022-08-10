@@ -3,6 +3,8 @@ import phot
 if __name__ == '__main__':
     """ 本代码为程序主函数 本代码主要适用于 QPSK，16QAM，32QAM，64QAM 调制格式的单载波相干背靠背（B2B）信号 """
 
+    # phot.config(plot=False)  # 全局关闭画图
+
     # 设置全局系统仿真参数
     num_symbols = 2 ** 16  # 符号数目
     bits_per_symbol = 4  # 2 for QPSK;4 for 16QAM; 5 for 32QAM; 6 for 64QAM  设置调制格式

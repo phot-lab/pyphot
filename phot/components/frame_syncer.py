@@ -1,5 +1,6 @@
 from ..optical import fine_synchronize
 import numpy as np
+from phot import logger
 
 
 class FrameSyncer:
@@ -15,8 +16,8 @@ class FrameSyncer:
         start_index_y_1 = fine_synchronize(signal_y[0:10000 * self.up_sampling_factor:self.up_sampling_factor].T,
                                            prev_signal_y[0:2000].T)
 
-        print('两个偏振第一次对准的帧头')
-        print('Start_Index_X_1: {} Start_Index_Y_1: {}'.format(start_index_x_1, start_index_y_1))
+        logger.info('两个偏振第一次对准的帧头')
+        logger.info('Start_Index_X_1: {} Start_Index_Y_1: {}'.format(start_index_x_1, start_index_y_1))
 
         # 将帧头位置前的信号去除，以便发射端信号与接收端信号的头部对准
         signal_x = np.delete(signal_x, np.arange(0, start_index_x_1 * self.up_sampling_factor))

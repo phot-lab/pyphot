@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.signal import resample_poly
 from ..optical import adc_resolution, gram_schmidt_orthogonalize, fre_offset_compensation_fft
+from phot import logger
 
 
 def add_freq_offset(signal_x, signal_y, frequency_offset, sampling_rate):
@@ -71,5 +72,5 @@ def iq_freq_offset_and_compensation(signal_x, signal_y, sampling_rate):
 
     # 利用FFT-FOE算法对信号的频偏进行估计与补偿
     re_x, re_y, fre_offset = fre_offset_compensation_fft(re_x, re_y, sampling_rate)
-    print('Estimated Coarse Frequency offset: {}'.format(fre_offset))
+    logger.info('Estimated Coarse Frequency offset: {}'.format(fre_offset))
     return re_x, re_y

@@ -1,6 +1,7 @@
 import numpy as np
 from ..optical import cma_rde, fre_offset_compensation_fft
 from ..utils import plot_scatter
+from phot import logger
 
 
 class AdaptiveEqualizer:
@@ -36,6 +37,6 @@ class AdaptiveEqualizer:
         equalization_matrix_x, equalization_matrix_y, fre_offset = fre_offset_compensation_fft(equalization_matrix_x,
                                                                                                equalization_matrix_y,
                                                                                                self.total_baud)
-        print('Estimated Accurate Frequency offset: {}'.format(fre_offset))
+        logger.info('Estimated Accurate Frequency offset: {}'.format(fre_offset))
 
         return equalization_matrix_x, equalization_matrix_y
