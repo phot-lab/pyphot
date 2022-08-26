@@ -1,5 +1,3 @@
-import sys
-
 import numpy as np
 from numpy.fft import fft, fftshift
 from phot.utils import plot_linechart, volts_to_decibel
@@ -39,8 +37,14 @@ def fre_offset_compensation_fft(input_complex_signal_x, input_complex_signal_y, 
     # PowerSpectrum_x=fftshift((abs(fft(ComplexSignal_4thPower_x)).^2).'); %% 取信号的傅里叶变换后，求功率
 
     power_spectrum = power_spectrum_x + power_spectrum_y  # 对X/Y偏振的功率谱相加
-    frequency_scale = np.arange(-sample_rate / 8, sample_rate / 8, sample_rate / fft_size / 4).reshape(
-        (-1, 1))  # Hz  列出信号的频率坐标
+
+    # step为float型时，arange函数会产生精度问题，故转而采用linspace
+    # frequency_scale = np.arange(-sample_rate / 8, sample_rate / 8, sample_rate / fft_size / 4).reshape(
+    #     (-1, 1))  # Hz  列出信号的频率坐标
+
+    # Hz  列出信号的频率坐标
+    frequency_scale = np.linspace(-sample_rate / 8, sample_rate / 8, fft_size + 1)
+    frequency_scale = np.delete(frequency_scale, -1).reshape((-1, 1))
 
     plot_linechart(frequency_scale * 1e-9, volts_to_decibel(power_spectrum))  # 画图
 

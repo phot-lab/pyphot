@@ -17,9 +17,6 @@ if __name__ == '__main__':
     """ 程序从此开始为发射端的仿真代码 """
 
     # 首先产生发射端X/Y双偏振信号
-    # data_x = phot.gen_bits((num_symbols * bits_per_symbol, 1), seed=1)  # 固定随机数序列
-    # data_y = phot.gen_bits((num_symbols * bits_per_symbol, 1))
-
     data_x = np.random.randint(0, 2, (num_symbols * bits_per_symbol, 1))  # 采用randint函数随机产生0 1码元序列x
     data_y = np.random.randint(0, 2, (num_symbols * bits_per_symbol, 1))  # 采用randint函数随机产生0 1码元序列y
 

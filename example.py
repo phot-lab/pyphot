@@ -6,7 +6,7 @@ if __name__ == '__main__':
     # phot.config(plot=False)  # 全局关闭画图
 
     # 设置全局系统仿真参数
-    num_symbols = 2 ** 16  # 符号数目
+    num_symbols = 2 ** 18  # 符号数目
     bits_per_symbol = 4  # 2 for QPSK;4 for 16QAM; 5 for 32QAM; 6 for 64QAM  设置调制格式
     total_baud = 64e9  # 信号波特率，符号率
     up_sampling_factor = 2  # 上采样倍数
