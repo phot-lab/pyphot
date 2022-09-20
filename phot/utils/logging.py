@@ -19,7 +19,7 @@ import logging
 import sys
 
 # Create a custom logger
-logger = logging.getLogger("pyphot")
+logger = logging.getLogger("phot")
 logger.setLevel(logging.DEBUG)
 
 # Create handlers

@@ -6,3 +6,6 @@ __pycache__/
 
 # macOS dir files
 .DS_Store
+
+# Project packaging generated files
+/dist/
