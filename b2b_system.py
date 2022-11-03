@@ -1,3 +1,5 @@
+import sys
+
 import numpy as np
 from commpy.modulation import QAMModem
 from commpy.filters import rrcosfilter
@@ -5,36 +7,37 @@ from scipy.signal import lfilter, resample_poly
 import phot
 
 if __name__ == '__main__':
-    """ 本代码为程序主函数 本代码主要适用于 QPSK，16QAM，32QAM，64QAM 调制格式的单载波相干背靠背（B2B）信号 """
+    """ Simulation for QPSK 16QAM 32QAM 64QAM in B2B systems """
 
-    # 设置全局系统仿真参数
-    num_symbols = 2 ** 16  # 符号数目
-    bits_per_symbol = 4  # 2 for QPSK;4 for 16QAM; 5 for 32QAM; 6 for 64QAM  设置调制格式
-    total_baud = 64e9  # 信号波特率，符号率
-    up_sampling_factor = 2  # 上采样倍数
-    sampling_rate = up_sampling_factor * total_baud  # 信号采样率
+    # Setting global system parameters
+    num_symbols = 2 ** 16  # The number of symbols
+    bits_per_symbol = 6  # 2-QPSK/4QAM  4-16QAM  5-32QAM  6-64QAM
+    total_baud = 10e9  # Symbol Rate /Hz
+    up_sampling_factor = 2  # Up-sampling factor
+    sampling_rate = up_sampling_factor * total_baud  # Sampling rate
 
-    """ 程序从此开始为发射端的仿真代码 """
+    """ Transmitter """
 
-    # 首先产生发射端X/Y双偏振信号
-    data_x = np.random.randint(0, 2, (num_symbols * bits_per_symbol, 1))  # 采用randint函数随机产生0 1码元序列x
-    data_y = np.random.randint(0, 2, (num_symbols * bits_per_symbol, 1))  # 采用randint函数随机产生0 1码元序列y
+    # Generate dual-polarization Signals
+    data_x = np.random.randint(0, 2, (num_symbols * bits_per_symbol, 1))  # Generate 0-1 bit sequence
+    data_y = np.random.randint(0, 2, (num_symbols * bits_per_symbol, 1))  # Generate 0-1 bit sequence
 
     modem = QAMModem(2 ** bits_per_symbol)
-    tx_symbols_x = modem.modulate(data_x).reshape((-1, 1))  # X偏振信号
-    tx_symbols_y = modem.modulate(data_y).reshape((-1, 1))  # Y偏振信号
+    tx_symbols_x = modem.modulate(data_x).reshape((-1, 1))  # Get symbol sequence at X-polarization state
+    tx_symbols_y = modem.modulate(data_y).reshape((-1, 1))  # Get symbol sequence at Y-polarization state
 
     scm_matrix_x = tx_symbols_x
     scm_matrix_y = tx_symbols_y
 
-    tx_scm_matrix_x = scm_matrix_x  # 此处先存储发射端原始发送信号，作为最后比较BER
+    # Saving symbols for final BER
+    tx_scm_matrix_x = scm_matrix_x  # SCM: sub-carrier multiplexing
     tx_scm_matrix_y = scm_matrix_y
 
-    """ RRC shaping   对信号进行RRC脉冲整形 """
+    """ RRC shaping """
 
-    RRC_ROLL_OFF = 0.1  # RRC脉冲整形滚降系数
+    RRC_ROLL_OFF = 0.5  # PRC-roll-off parameter
 
-    # 先进行插0上采样，上采样倍数为 up_sampling_factor
+    # Upsampling with inserting 0, final-result: symbol-1, 0, symbol-2, 0, ..., symbol-n, 0
     upsampled_matrix_x = phot.upsample(scm_matrix_x, up_sampling_factor)
     upsampled_matrix_y = phot.upsample(scm_matrix_y, up_sampling_factor)
 
@@ -68,7 +71,7 @@ if __name__ == '__main__':
     tx_samples_x_dac = resample_poly(tx_samples_x_dac, int(sampling_rate), int(sampling_rate_awg)).reshape((-1, 1))
     tx_samples_y_dac = resample_poly(tx_samples_y_dac, int(sampling_rate), int(sampling_rate_awg)).reshape((-1, 1))
 
-    # 采样率转换信号 = resample(经过DAC转换后的信号，进行下一步信号处理的采样率，DAC的采样率)
+    # Finally, resampling rate = original sampling rate.
 
     """ 加入发射端激光器产生的相位噪声 """
 
@@ -82,7 +85,7 @@ if __name__ == '__main__':
 
     """ 根据设置的OSNR来加入高斯白噪声 """
 
-    OSNR_dB = 25  # 设置系统OSNR，也就是光信号功率与噪声功率的比值，此处单位为dB
+    OSNR_dB = 30  # 设置系统OSNR，也就是光信号功率与噪声功率的比值，此处单位为dB
 
     # 生成均值为0，方差为1的随机噪声,此处直接产生两个偏振的噪声
     noise_x, noise_y, noise_power = phot.load_awgn(len(tx_samples_x_dac))
@@ -103,6 +106,22 @@ if __name__ == '__main__':
     tx_signal_x = noise_x + tx_signal_x
     tx_signal_y = noise_y + tx_signal_y
 
+    """ Optical Fiber Channel """
+
+    span = 5  # 一个span代表多少L
+    num_steps = 75  # 代表一个L多少步
+    L = 75  # 一个L代表多少km
+    delta_z = L / num_steps  # 单步步长
+    alpha = 0.2
+    beta2 = 21.6676e-24
+    gamma = 1.3
+
+    tx_signal_x, tx_signal_y, power_temp_x, power_temp_y = phot.optical_fiber_channel(tx_signal_x, tx_signal_y,
+                                                                                      sampling_rate, span, num_steps,
+                                                                                      beta2, delta_z, gamma)
+
+    """ Optical Receiver Simulation """
+
     """ 添加接收端激光器产生的相位噪声 """
 
     linewidth_rx = 150e3  # 激光器线宽
@@ -111,13 +130,8 @@ if __name__ == '__main__':
     phase_noise = phot.linewidth_induced_noise(len(tx_signal_x), sampling_rate / total_baud, linewidth_rx, total_baud)
 
     # 添加相位噪声
-    tx_signal_x = tx_signal_x * np.exp(1j * phase_noise)
-    tx_signal_y = tx_signal_y * np.exp(1j * phase_noise)
-
-    """
-    发射端代码此处截止
-    以下开始为接收端的代码
-    """
+    rx_signal_x = tx_signal_x * np.exp(1j * phase_noise)
+    rx_signal_y = tx_signal_y * np.exp(1j * phase_noise)
 
     """ 添加收发端激光器造成的频偏，就是发射端激光器和接收端激光器的中心频率的偏移差 """
 
@@ -125,20 +139,20 @@ if __name__ == '__main__':
 
     # 2*pi*N*V*T   通过公式计算频偏造成的相位，N表示每个符号对应的序号，[1:length(TxSignal_X)]
     phase_carrier_offset = (
-            np.arange(1, len(tx_signal_x) + 1).T * 2 * np.pi * frequency_offset / sampling_rate).reshape((-1, 1))
+            np.arange(1, len(rx_signal_x) + 1).T * 2 * np.pi * frequency_offset / sampling_rate).reshape((-1, 1))
 
     # 添加频偏，频偏也可以看作一个相位
-    tx_signal_x = tx_signal_x * np.exp(1j * phase_carrier_offset)
-    tx_signal_y = tx_signal_y * np.exp(1j * phase_carrier_offset)
+    rx_signal_x = rx_signal_x * np.exp(1j * phase_carrier_offset)
+    rx_signal_y = rx_signal_y * np.exp(1j * phase_carrier_offset)
 
     """ 模拟接收机造成的I/Q失衡，主要考虑幅度失衡和相位失衡，这里将两者都加在虚部上 """
 
-    rx_xi_tem = np.real(tx_signal_x)  # 取信号实部
-    rx_xq_tem = np.imag(tx_signal_x)  # 取信号虚部
-    rx_yi_tem = np.real(tx_signal_y)  # 取信号实部
-    rx_yq_tem = np.imag(tx_signal_y)  # 取信号虚部
+    rx_xi_tem = np.real(rx_signal_x)  # 取信号实部
+    rx_xq_tem = np.imag(rx_signal_x)  # 取信号虚部
+    rx_yi_tem = np.real(rx_signal_y)  # 取信号实部
+    rx_yq_tem = np.imag(rx_signal_y)  # 取信号虚部
 
-    amplitude_imbalance = np.power(10, 3 / 20)  # 10^(3/20)为幅度失衡因子
+    amplitude_imbalance = 10 ** (3 / 20)  # 10^(3/20)为幅度失衡因子
     phase_imbalance = np.pi * 80 / 180  # 80/180为相位失衡因子
 
     # 对虚部信号乘一个幅度失衡因子
@@ -146,16 +160,16 @@ if __name__ == '__main__':
     rx_yq_tem = rx_yq_tem * amplitude_imbalance
 
     # 对虚部信号添加一个失衡相位,并将实部虚部组合为复数信号
-    tx_signal_x = rx_xi_tem + np.exp(1j * phase_imbalance) * rx_xq_tem
-    tx_signal_y = rx_yi_tem + np.exp(1j * phase_imbalance) * rx_yq_tem
+    rx_signal_x = rx_xi_tem + np.exp(1j * phase_imbalance) * rx_xq_tem
+    rx_signal_y = rx_yi_tem + np.exp(1j * phase_imbalance) * rx_yq_tem
 
     """ 加入ADC的量化噪声 """
     adc_sample_rate = 160e9  # ADC采样率
     adc_resolution_bits = 8  # ADC的bit位数
 
     # 重采样改变采样率为ADC采样率，模拟进入ADC
-    re_x = resample_poly(tx_signal_x, int(adc_sample_rate), int(sampling_rate))
-    re_y = resample_poly(tx_signal_y, int(adc_sample_rate), int(sampling_rate))
+    re_x = resample_poly(rx_signal_x, int(adc_sample_rate), int(sampling_rate))
+    re_y = resample_poly(rx_signal_y, int(adc_sample_rate), int(sampling_rate))
 
     # 对信号量化，添加ADC造成的量化噪声
     re_x = phot.adc_resolution(re_x, adc_resolution_bits)
@@ -179,7 +193,15 @@ if __name__ == '__main__':
     re_x = rx_xi_tem + 1j * rx_xq_tem
     re_y = rx_yi_tem + 1j * rx_yq_tem
 
-    """ 粗糙的频偏估计和补偿，先进行一个频偏的补偿，因为后面有一个帧同步，而帧同步之前需要先对频偏进行补偿，否则帧同步不正确 """
+    span = 5
+    num_steps = 1
+    L = 75
+    delta_z = L / num_steps
+    beta_2 = 21.6676e-24
+    gamma = 0
+
+    re_x, re_y = phot.dbp_compensate(re_x, re_y, power_temp_x, power_temp_y, sampling_rate, span, num_steps, beta2,
+                                     delta_z, gamma)
 
     # 利用FFT-FOE算法对信号的频偏进行估计与补偿
     re_x, re_y, fre_offset = phot.fre_offset_compensation_fft(re_x, re_y, sampling_rate)
@@ -263,6 +285,9 @@ if __name__ == '__main__':
     elif bits_per_symbol == 5:
         equalization_matrix_x = equalization_matrix_x * np.sqrt(20)
         equalization_matrix_y = equalization_matrix_y * np.sqrt(20)
+    elif bits_per_symbol == 6:
+        equalization_matrix_x = equalization_matrix_x * np.sqrt(42)
+        equalization_matrix_y = equalization_matrix_y * np.sqrt(42)
 
     phot.utils.plot_scatter(equalization_matrix_x)
 
@@ -286,13 +311,6 @@ if __name__ == '__main__':
     tx_scm_matrix_y = tx_scm_matrix_y[0:len(equalization_matrix_y), :]
 
     """ BER COUNT  对信号进行误码率计算，将接收信号与发射信号转化为格雷编码，比较各个码元的正确率 """
-
-    tx_bits = modem.demodulate(
-        np.concatenate((np.reshape(tx_scm_matrix_x, (-1, 1)), np.reshape(tx_scm_matrix_y, (-1, 1))), axis=0).ravel(),
-        demod_type='hard')
-    rx_bits = modem.demodulate(
-        np.concatenate((np.reshape(equalization_matrix_x, (-1, 1)), np.reshape(equalization_matrix_y, (-1, 1))),
-                       axis=0).ravel(), demod_type='hard')
-    ber, q_db = phot.ber_count(rx_bits, tx_bits)  # 比较码元的正确率
-    print('Calculated overall bits error is {:.5f}'.format(ber))
-
+    ber, q_db = phot.ber_estimate(tx_scm_matrix_y, equalization_matrix_y, bits_per_symbol)
+    print('Estimated overall bits error is {:.5f}'.format(ber))
+    print('Estimated Q factor is {:.5f}'.format(q_db))

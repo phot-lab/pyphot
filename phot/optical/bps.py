@@ -132,6 +132,13 @@ def _init_constellation(bits_per_symbol):
          1 + 3j, 1 + 1j, 1 - 1j, 1 - 3j, 1 - 5j, -1 + 5j, -1 + 3j, -1 + 1j, -1 - 1j, -1 - 3j, -1 - 5j,
          -3 + 5j, -3 + 3j, -3 + 1j, -3 - 1j, -3 - 3j, -3 - 5j, -5 + 3j, -5 + 1j, -5 - 1j, -5 - 3j])
 
+    constellation_64qam = np.array(
+        [7 + 7j, 7 + 5j, 7 + 3j, 7 + 1j, 7 - 1j, 7 - 3j, 7 - 5j, 7 - 7j, 5 + 7j, 5 + 5j, 5 + 3j, 5 + 1j, 5 - 1j, 5 - 3j,
+         5 - 5j, 5 - 7j, 3 + 7j, 3 + 5j, 3 + 3j, 3 + 1j, 3 - 1j, 3 - 3j, 3 - 5j, 3 - 7j, 1 + 7j, 1 + 5j, 1 + 3j, 1 + 1j,
+         1 - 1j, 1 - 3j, 1 - 5j, 1 - 7j, -1 + 7j, -1 + 5j, -1 + 3j, -1 + 1j, -1 - 1j, -1 - 3j, -1 - 5j, -1 - 7j,
+         -3 + 7j, -3 + 5j, -3 + 3j, -3 + 1j, -3 - 1j, -3 - 3j, -3 - 5j, -3 - 7j, -5 + 7j, -5 + 5j, -5 + 3j, -5 + 1j,
+         -5 - 1j, -5 - 3j, -5 - 5j, -5 - 7j, -7 + 7j, -7 + 5j, -7 + 3j, -7 + 1j, -7 - 1j, -7 - 3j, -7 - 5j, -7 - 7j])
+
     # 对星座点进行归一化，因为接收信号归一化了，这里进行对应
     if bits_per_symbol == 2:
         constellation_hy = constellation_4qam / sqrt(2)
@@ -141,8 +148,11 @@ def _init_constellation(bits_per_symbol):
         constellation_hy = constellation_16qam / sqrt(10)
     elif bits_per_symbol == 5:
         constellation_hy = constellation_32qam / sqrt(20)
+    elif bits_per_symbol == 6:
+        constellation_hy = constellation_64qam / sqrt(42)
     else:
         raise RuntimeError('Unknown bits number')
+
     return constellation_hy
 
 
@@ -183,9 +193,3 @@ def decision_hybrid_qam(input_signal, constellation_hy):
             out[i][j] = constellation_hy[min_index]
 
     return out
-
-
-def _compute_distance(elem):
-    pass
-    # min_index = np.argmin(np.abs(constellation_hy - elem))
-    # return constellation_hy[min_index]
