@@ -2,8 +2,7 @@
 
 ### Generate requirements.txt
 
-**requirements.txt** is useful for installation of related dependencies, you can generate it by command line tool **
-pipreqs**, enter the root directory and execute this command:
+**requirements.txt** is useful for installation of related dependencies, you can generate it by command line tool **pipreqs**, enter the root directory and execute this command:
 
 ```shell
 pipreqs . --mode gt --force --ignore ./test

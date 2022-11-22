@@ -26,3 +26,4 @@ from .bps import bps_hybrid_qam
 from .bit_error import ber_count, ber_estimate
 from .fiber import optical_fiber_channel
 from .dbp_compensate import dbp_compensate
+from .cdc import cdc

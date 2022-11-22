@@ -12,7 +12,7 @@ if __name__ == '__main__':
     # Setting global system parameters
     num_symbols = 2 ** 16  # The number of symbols
     bits_per_symbol = 6  # 2-QPSK/4QAM  4-16QAM  5-32QAM  6-64QAM
-    total_baud = 10e9  # Symbol Rate /Hz
+    total_baud = 20e9  # Symbol Rate /Hz
     up_sampling_factor = 2  # Up-sampling factor
     sampling_rate = up_sampling_factor * total_baud  # Sampling rate
 
@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
     """ RRC shaping """
 
-    RRC_ROLL_OFF = 0.5  # PRC-roll-off parameter
+    RRC_ROLL_OFF = 0.02  # PRC-roll-off parameter
 
     # Upsampling with inserting 0, final-result: symbol-1, 0, symbol-2, 0, ..., symbol-n, 0
     upsampled_matrix_x = phot.upsample(scm_matrix_x, up_sampling_factor)
@@ -85,7 +85,7 @@ if __name__ == '__main__':
 
     """ 根据设置的OSNR来加入高斯白噪声 """
 
-    OSNR_dB = 30  # 设置系统OSNR，也就是光信号功率与噪声功率的比值，此处单位为dB
+    OSNR_dB = 50  # 设置系统OSNR，也就是光信号功率与噪声功率的比值，此处单位为dB
 
     # 生成均值为0，方差为1的随机噪声,此处直接产生两个偏振的噪声
     noise_x, noise_y, noise_power = phot.load_awgn(len(tx_samples_x_dac))
@@ -108,9 +108,10 @@ if __name__ == '__main__':
 
     """ Optical Fiber Channel """
 
-    span = 5  # 一个span代表多少L
-    num_steps = 75  # 代表一个L多少步
-    L = 75  # 一个L代表多少km
+    # 1000公里 10米一步
+    span = 5  # 一个 span 代表多少 L
+    num_steps = 75  # 代表一个 L 多少步
+    L = 75  # 一个 L 代表多少 km
     delta_z = L / num_steps  # 单步步长
     alpha = 0.2
     beta2 = 21.6676e-24
@@ -118,7 +119,7 @@ if __name__ == '__main__':
 
     tx_signal_x, tx_signal_y, power_temp_x, power_temp_y = phot.optical_fiber_channel(tx_signal_x, tx_signal_y,
                                                                                       sampling_rate, span, num_steps,
-                                                                                      beta2, delta_z, gamma)
+                                                                                      beta2, delta_z, gamma, alpha, L)
 
     """ Optical Receiver Simulation """
 
@@ -193,15 +194,19 @@ if __name__ == '__main__':
     re_x = rx_xi_tem + 1j * rx_xq_tem
     re_y = rx_yi_tem + 1j * rx_yq_tem
 
-    span = 5
-    num_steps = 1
-    L = 75
-    delta_z = L / num_steps
-    beta_2 = 21.6676e-24
-    gamma = 0
+    # CDC
+    re_x, re_y = phot.cdc(re_x, re_y, power_temp_x, power_temp_y, sampling_rate, beta2, span, L)
 
-    re_x, re_y = phot.dbp_compensate(re_x, re_y, power_temp_x, power_temp_y, sampling_rate, span, num_steps, beta2,
-                                     delta_z, gamma)
+    # 暂时注释掉了 DBP compensating
+    # span = 5
+    # num_steps = 1
+    # L = 75
+    # delta_z = L / num_steps
+    # beta_2 = 21.6676e-24
+    # gamma = 0
+    #
+    # re_x, re_y = phot.dbp_compensate(re_x, re_y, power_temp_x, power_temp_y, sampling_rate, span, num_steps, beta2,
+    #                                  delta_z, gamma)
 
     # 利用FFT-FOE算法对信号的频偏进行估计与补偿
     re_x, re_y, fre_offset = phot.fre_offset_compensation_fft(re_x, re_y, sampling_rate)
@@ -216,9 +221,9 @@ if __name__ == '__main__':
 
     # 对信号进行帧同步，找出接收信号与发射信号对准的开头
     start_index_x_1 = phot.fine_synchronize(re_x[0:10000 * up_sampling_factor:up_sampling_factor].T,
-                                            tx_scm_matrix_x[0:2000].T)
+                                            tx_scm_matrix_x[0:4000].T)
     start_index_y_1 = phot.fine_synchronize(re_y[0:10000 * up_sampling_factor:up_sampling_factor].T,
-                                            tx_scm_matrix_y[0:2000].T)
+                                            tx_scm_matrix_y[0:4000].T)
 
     print('两个偏振第一次对准的帧头')
     print('Start_Index_X_1: {} Start_Index_Y_1: {}'.format(start_index_x_1, start_index_y_1))
