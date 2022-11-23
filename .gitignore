@@ -9,3 +9,4 @@ __pycache__/
 
 # Project packaging generated files
 /dist/
+*.egg-info/

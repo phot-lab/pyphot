@@ -1,6 +1,5 @@
 import numpy as np
 from numpy.fft import fftshift, fft, ifft, ifftshift
-from numba import njit, prange
 
 
 def optical_fiber_channel(tx_signal_x: np.ndarray,
