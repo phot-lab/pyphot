@@ -8,6 +8,16 @@ Note the `--recursive` option which is needed for the pybind11 submodule:
 git clone --recursive https://github.com/phot-lab/pyphot.git
 ```
 
+## Test the project
+
+Under the root dir
+
+```shell
+pip install -e .
+```
+
+Then you can use the modules and functions of **PyPhot** simply by `import phot`.
+
 ## Generate requirements.txt
 
 **requirements.txt** is useful for installation of related dependencies, you can generate it by command line tool **pipreqs**, enter the root directory and execute this command:
