@@ -1,5 +1,13 @@
 # Development document
 
+## Clone the repo
+
+Note the `--recursive` option which is needed for the pybind11 submodule:
+
+```shell
+git clone --recursive https://github.com/phot-lab/pyphot.git
+```
+
 ## Generate requirements.txt
 
 **requirements.txt** is useful for installation of related dependencies, you can generate it by command line tool **pipreqs**, enter the root directory and execute this command:

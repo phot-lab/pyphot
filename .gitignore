@@ -10,3 +10,17 @@ __pycache__/
 # Project packaging generated files
 /dist/
 *.egg-info/
+
+# pip install generated compiled files
+/build/
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib

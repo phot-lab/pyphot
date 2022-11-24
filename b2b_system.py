@@ -1,5 +1,3 @@
-import sys
-
 import numpy as np
 from commpy.modulation import QAMModem
 from commpy.filters import rrcosfilter
