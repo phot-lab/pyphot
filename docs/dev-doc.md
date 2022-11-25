@@ -2,7 +2,7 @@
 
 ## Clone the repo
 
-Note the `--recursive` option which is needed for the pybind11 submodule:
+Note the `--recursive` option which is needed for the `pybind11` submodule:
 
 ```shell
 git clone --recursive https://github.com/phot-lab/pyphot.git
@@ -20,7 +20,7 @@ Then you can use the modules and functions of **PyPhot** simply by `import phot`
 
 ## Generate requirements.txt
 
-**requirements.txt** is useful for installation of related dependencies, you can generate it by command line tool **pipreqs**, enter the root directory and execute this command:
+**requirements.txt** is useful for installation of related dependencies, you can generate it by command line tool `pipreqs`, enter the root directory and execute this command:
 
 ```shell
 pipreqs . --mode gt --force --ignore ./test
@@ -28,9 +28,10 @@ pipreqs . --mode gt --force --ignore ./test
 
 ## Generate distribution files
 
-In the same directory with the **pyproject.toml**
+In the same directory with the **setup.py**:
 
 ```shell
+# Build both source and binary distribution files
 python3 -m build
 ```
 
@@ -42,6 +43,6 @@ Use this command to upload to PyPI, notice that you should ensure the **project 
 python3 -m twine upload dist/*
 ```
 
-## Deprecated phot module
+## Legacy files
 
-The deprecated phot module is in `deprecated` folder.
+The legacy phot module is in `legacy` folder.

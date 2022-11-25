@@ -4,7 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from setuptools import Extension, setup
+from setuptools import Extension, setup, find_packages
 from setuptools.command.build_ext import build_ext
 
 # Convert distutils Windows platform specifiers to CMake -A arguments
@@ -56,7 +56,7 @@ class CMakeBuild(build_ext):
             cmake_args += [item for item in os.environ["CMAKE_ARGS"].split(" ") if item]
 
         # In this example, we pass in the version to C++. You might not need to.
-        cmake_args += [f"-DEXAMPLE_VERSION_INFO={self.distribution.get_version()}"]  # type: ignore[attr-defined]
+        cmake_args += [f"-DDIST_VERSION_INFO={self.distribution.get_version()}"]  # type: ignore[attr-defined]
 
         if self.compiler.compiler_type != "msvc":
             # Using Ninja-build since it a) is available as a wheel and b)
@@ -133,7 +133,7 @@ def read(filename):
 # logic and declaration, and simpler if you include description/version in a file.
 setup(
     name="phot",
-    version="0.2.3",
+    version="0.2.9",
     author="Chunyu Li",
     author_email="cyli0212@gmail.com",
     description="A Python library for the simulation of optical fiber transmission",
@@ -141,11 +141,12 @@ setup(
     long_description=read('README.md'),
     ext_modules=[CMakeExtension(name="phot_C", sourcedir=".")],
     cmdclass={"build_ext": CMakeBuild},
-    zip_safe=False,
-    extras_require={"test": ["pytest>=6.0"]},
     url="https://github.com/phot-lab/pyphot",
-    package_dir={"phot": "phot"},
-    packages=['phot'],
+    package_dir={"": '.'},  # '.' specify root dir
+    packages=find_packages(
+        where='.',
+        include=['phot*'],  # alternatively: `exclude=['additional*']`
+    ),
     python_requires=">=3.7",
     install_requires=[
         'matplotlib>=3.5.2',

@@ -6,7 +6,7 @@ A Python library for the simulation of optical fiber transmission, characterized
 
 ```shell
 # Install PyPhot library
-pip3 install phot
+pip install phot
 
 # Run example
 python3 example.py
