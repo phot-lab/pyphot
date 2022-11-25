@@ -10,9 +10,8 @@ int add(int i, int j) {
 namespace py = pybind11;
 
 
-PYBIND11_MODULE(phot_C, m) {
-//    py::module m = m1.def_submodule("cpp", "A peon is a submodule of 'ork'");
-//    m.attr("__name__") = "phot.cpp"; // The default would be just "foo"
+PYBIND11_MODULE(_C, m) {
+    m.attr("__name__") = "phot._C"; // The default would be just "_C"
 //    py::module_ m = m1.def_submodule("cpp", "A submodule of 'example'");
     m.doc() = R"pbdoc(
         Pybind11 example plugin

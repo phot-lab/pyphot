@@ -133,13 +133,13 @@ def read(filename):
 # logic and declaration, and simpler if you include description/version in a file.
 setup(
     name="phot",
-    version="0.2.9",
+    version="0.2.11",
     author="Chunyu Li",
     author_email="cyli0212@gmail.com",
     description="A Python library for the simulation of optical fiber transmission",
     long_description_content_type='text/markdown',
     long_description=read('README.md'),
-    ext_modules=[CMakeExtension(name="phot_C", sourcedir=".")],
+    ext_modules=[CMakeExtension(name="phot._C", sourcedir=".")],
     cmdclass={"build_ext": CMakeBuild},
     url="https://github.com/phot-lab/pyphot",
     package_dir={"": '.'},  # '.' specify root dir

@@ -1,5 +1,5 @@
 import math
-from deprecated import phot
+from legacy import phot
 
 if __name__ == '__main__':
     # Init global parameters
