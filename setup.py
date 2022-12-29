@@ -28,7 +28,8 @@ class CMakeExtension(Extension):
 class CMakeBuild(build_ext):
     def build_extension(self, ext: CMakeExtension) -> None:
         # Must be in this form due to bug in .resolve() only fixed in Python 3.10+
-        ext_fullpath = Path.cwd() / self.get_ext_fullpath(ext.name)  # type: ignore[no-untyped-call]
+        # type: ignore[no-untyped-call]
+        ext_fullpath = Path.cwd() / self.get_ext_fullpath(ext.name)
         extdir = ext_fullpath.parent.resolve()
 
         # Using this requires trailing slash for auto-detection & inclusion of
@@ -56,7 +57,8 @@ class CMakeBuild(build_ext):
             cmake_args += [item for item in os.environ["CMAKE_ARGS"].split(" ") if item]
 
         # In this example, we pass in the version to C++. You might not need to.
-        cmake_args += [f"-DDIST_VERSION_INFO={self.distribution.get_version()}"]  # type: ignore[attr-defined]
+        # type: ignore[attr-defined]
+        cmake_args += [f"-DDIST_VERSION_INFO={self.distribution.get_version()}"]
 
         if self.compiler.compiler_type != "msvc":
             # Using Ninja-build since it a) is available as a wheel and b)
@@ -79,7 +81,8 @@ class CMakeBuild(build_ext):
         else:
 
             # Single config generators are handled "normally"
-            single_config = any(x in cmake_generator for x in {"NMake", "Ninja"})
+            single_config = any(
+                x in cmake_generator for x in {"NMake", "Ninja"})
 
             # CMake allows an arch-in-generator style for backward compatibility
             contains_arch = any(x in cmake_generator for x in {"ARM", "Win64"})
@@ -139,8 +142,11 @@ setup(
     description="A Python library for the simulation of optical fiber transmission",
     long_description_content_type='text/markdown',
     long_description=read('README.md'),
-    ext_modules=[CMakeExtension(name="phot._C", sourcedir=".")],
-    cmdclass={"build_ext": CMakeBuild},
+
+    # The two lines below are for C code extension
+    # ext_modules=[CMakeExtension(name="phot._C", sourcedir=".")],
+    # cmdclass={"build_ext": CMakeBuild},
+
     url="https://github.com/phot-lab/pyphot",
     package_dir={"": '.'},  # '.' specify root dir
     packages=find_packages(

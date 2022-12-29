@@ -40,8 +40,8 @@ if __name__ == '__main__':
     upsampled_matrix_y = phot.upsample(scm_matrix_y, up_sampling_factor)
 
     # 产生RRC滤波器
-    time_idx, rrc_filter = rrcosfilter(N=128 * up_sampling_factor, alpha=RRC_ROLL_OFF, Ts=1 / total_baud,
-                                       Fs=sampling_rate)  # up_sampling_factor*128为滤波器的长度
+    time_idx, rrc_filter = rrcosfilter(N=128 * up_sampling_factor, alpha=RRC_ROLL_OFF,
+                                       Ts=1 / total_baud, Fs=sampling_rate)  # up_sampling_factor*128为滤波器的长度
     rrc_filter = (rrc_filter * np.sqrt(2))
 
     # 对信号使用RRC滤波器脉冲整形
@@ -74,8 +74,8 @@ if __name__ == '__main__':
     """ 加入发射端激光器产生的相位噪声 """
 
     linewidth_tx = 150e3  # 激光器线宽
-    phase_noise = phot.linewidth_induced_noise(len(tx_samples_x_dac), sampling_rate / total_baud, linewidth_tx,
-                                               total_baud)  # 通过线宽计算相位噪声方差，产生随机的相位噪声
+    phase_noise = phot.linewidth_induced_noise(
+        len(tx_samples_x_dac), sampling_rate / total_baud, linewidth_tx, total_baud)  # 通过线宽计算相位噪声方差，产生随机的相位噪声
 
     # 添加相位噪声
     tx_samples_x_dac = tx_samples_x_dac * np.exp(1j * phase_noise)
@@ -115,9 +115,8 @@ if __name__ == '__main__':
     beta2 = 21.6676e-24
     gamma = 1.3
 
-    tx_signal_x, tx_signal_y, power_temp_x, power_temp_y = phot.optical_fiber_channel(tx_signal_x, tx_signal_y,
-                                                                                      sampling_rate, span, num_steps,
-                                                                                      beta2, delta_z, gamma, alpha, L)
+    tx_signal_x, tx_signal_y, power_temp_x, power_temp_y = phot.optical_fiber_channel(
+        tx_signal_x, tx_signal_y, sampling_rate, span, num_steps, beta2, delta_z, gamma, alpha, L)
 
     """ Optical Receiver Simulation """
 
@@ -138,7 +137,7 @@ if __name__ == '__main__':
 
     # 2*pi*N*V*T   通过公式计算频偏造成的相位，N表示每个符号对应的序号，[1:length(TxSignal_X)]
     phase_carrier_offset = (
-            np.arange(1, len(rx_signal_x) + 1).T * 2 * np.pi * frequency_offset / sampling_rate).reshape((-1, 1))
+        np.arange(1, len(rx_signal_x) + 1).T * 2 * np.pi * frequency_offset / sampling_rate).reshape((-1, 1))
 
     # 添加频偏，频偏也可以看作一个相位
     rx_signal_x = rx_signal_x * np.exp(1j * phase_carrier_offset)
@@ -218,10 +217,10 @@ if __name__ == '__main__':
     """ 帧同步，寻找与发射端原始信号头部对应的符号 """
 
     # 对信号进行帧同步，找出接收信号与发射信号对准的开头
-    start_index_x_1 = phot.fine_synchronize(re_x[0:10000 * up_sampling_factor:up_sampling_factor].T,
-                                            tx_scm_matrix_x[0:4000].T)
-    start_index_y_1 = phot.fine_synchronize(re_y[0:10000 * up_sampling_factor:up_sampling_factor].T,
-                                            tx_scm_matrix_y[0:4000].T)
+    start_index_x_1 = phot.fine_synchronize(
+        re_x[0:10000 * up_sampling_factor:up_sampling_factor].T, tx_scm_matrix_x[0:4000].T)
+    start_index_y_1 = phot.fine_synchronize(
+        re_y[0:10000 * up_sampling_factor:up_sampling_factor].T, tx_scm_matrix_y[0:4000].T)
 
     print('两个偏振第一次对准的帧头')
     print('Start_Index_X_1: {} Start_Index_Y_1: {}'.format(start_index_x_1, start_index_y_1))
@@ -263,9 +262,8 @@ if __name__ == '__main__':
     """ 均衡后进行精确的频偏估计和补偿 采用FFT-FOE算法，与前面的粗估计一样，防止前面粗估计没补偿完全，此处做一个补充 """
 
     # 利用FFT-FOE算法对信号的频偏进行估计与补偿
-    equalization_matrix_x, equalization_matrix_y, fre_offset = phot.fre_offset_compensation_fft(equalization_matrix_x,
-                                                                                                equalization_matrix_y,
-                                                                                                total_baud)
+    equalization_matrix_x, equalization_matrix_y, fre_offset = phot.fre_offset_compensation_fft(
+        equalization_matrix_x, equalization_matrix_y, total_baud)
     print('Estimated Accurate Frequency offset: {}'.format(fre_offset))
 
     """ 相位恢复  采用盲相位搜索算法（BPS）进行相位估计和补偿 """
@@ -299,7 +297,8 @@ if __name__ == '__main__':
     """ 再进行一个帧同步，因为经过均衡器会存在符号的一些舍弃，因此在计算误码率（BER）之前需要再一次帧同步 """
 
     # 对发射端信号跟均衡后信号进行同步
-    start_index_x_1 = phot.fine_synchronize(tx_scm_matrix_x[:, 0].T, equalization_matrix_x[0:10000, 0].reshape((1, -1)))
+    start_index_x_1 = phot.fine_synchronize(
+        tx_scm_matrix_x[:, 0].T, equalization_matrix_x[0:10000, 0].reshape((1, -1)))
 
     # 对发射端信号利用自带函数进行移动
     tx_scm_matrix_x = np.roll(tx_scm_matrix_x, -start_index_x_1)

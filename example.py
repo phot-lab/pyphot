@@ -88,7 +88,8 @@ if __name__ == '__main__':
 
     """ 帧同步，寻找与发射端原始信号头部对应的符号 """
     syncer = phot.FrameSyncer(up_sampling_factor)
-    signal_x, signal_y, prev_symbols_x, prev_symbols_y = syncer.sync(signal_x, signal_y, prev_symbols_x, prev_symbols_y)
+    signal_x, signal_y, prev_symbols_x, prev_symbols_y = syncer.sync(
+        signal_x, signal_y, prev_symbols_x, prev_symbols_y)
 
     """ 自适应均衡，此处采用恒模算法（CMA）对收敛系数进行预收敛，再拿收敛后的滤波器系数对正式的信号使用半径定向算法（RDE）进行均衡收敛，总的思想采用梯度下降法 """
 
@@ -96,7 +97,7 @@ if __name__ == '__main__':
     ref_power_cma = 2  # 设置CMA算法的模
     cma_convergence = 30000  # CMA预均衡收敛的信号长度
     step_size_cma = 1e-9  # CMA的更新步长，梯度下降法的步长
-    step_size_rde = 1e-9  # RDE的更新步长，梯度下降法的步长  ， %% CMA和RDE主要就是损失函数不同
+    step_size_rde = 1e-9  # RDE的更新步长，梯度下降法的步长，%% CMA和RDE主要就是损失函数不同
 
     equalizer = phot.AdaptiveEqualizer(num_tap, cma_convergence, ref_power_cma, step_size_cma, step_size_rde,
                                        up_sampling_factor, bits_per_symbol, total_baud)

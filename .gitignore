@@ -24,3 +24,6 @@ __pycache__/
 *.la
 *.a
 *.lib
+
+# VS Code configuration dir
+.vscode/
