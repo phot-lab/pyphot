@@ -16,12 +16,12 @@ Supported by: National Key Research and Development Program of China
 """
 
 from .pulse_shaping import PulseShaper
-from .dac_noise import DacNoise
-from .phase_noise import PhaseNoise
-from .gaussian_noise import GaussianNoise
-from .frame_syncer import FrameSyncer
-from .adaptive_equalizer import AdaptiveEqualizer
-from .bps import BPS
-from .ber import BER
-from .modem import Modem
+from .dac_noise import dac_noise
+from .phase_noise import phase_noise
+from .gaussian_noise import gaussian_noise
+from .frame_syncer import sync_frame
+from .adaptive_equalizer import adaptive_equalize
+from .bps import bps_restore
+from .ber import bits_error_count
+from .modem import qam_modulate
 from .rx_simple import add_freq_offset, add_iq_imbalance, add_adc_noise, iq_freq_offset_and_compensation

@@ -81,8 +81,7 @@ class CMakeBuild(build_ext):
         else:
 
             # Single config generators are handled "normally"
-            single_config = any(
-                x in cmake_generator for x in {"NMake", "Ninja"})
+            single_config = any(x in cmake_generator for x in {"NMake", "Ninja"})
 
             # CMake allows an arch-in-generator style for backward compatibility
             contains_arch = any(x in cmake_generator for x in {"ARM", "Win64"})
@@ -95,9 +94,7 @@ class CMakeBuild(build_ext):
 
             # Multi-config generators have a different way to specify configs
             if not single_config:
-                cmake_args += [
-                    f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{cfg.upper()}={extdir}"
-                ]
+                cmake_args += [f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{cfg.upper()}={extdir}"]
                 build_args += ["--config", cfg]
 
         if sys.platform.startswith("darwin"):
@@ -119,12 +116,8 @@ class CMakeBuild(build_ext):
         if not build_temp.exists():
             build_temp.mkdir(parents=True)
 
-        subprocess.run(
-            ["cmake", ext.sourcedir] + cmake_args, cwd=build_temp, check=True
-        )
-        subprocess.run(
-            ["cmake", "--build", "."] + build_args, cwd=build_temp, check=True
-        )
+        subprocess.run(["cmake", ext.sourcedir] + cmake_args, cwd=build_temp, check=True)
+        subprocess.run(["cmake", "--build", "."] + build_args, cwd=build_temp, check=True)
 
 
 # Utility function to read the README file.
@@ -136,29 +129,21 @@ def read(filename):
 # logic and declaration, and simpler if you include description/version in a file.
 setup(
     name="phot",
-    version="0.2.11",
+    version="0.2.12",
     author="Chunyu Li",
     author_email="cyli0212@gmail.com",
     description="A Python library for the simulation of optical fiber transmission",
-    long_description_content_type='text/markdown',
-    long_description=read('README.md'),
-
+    long_description_content_type="text/markdown",
+    long_description=read("README.md"),
     # The two lines below are for C code extension
     # ext_modules=[CMakeExtension(name="phot._C", sourcedir=".")],
     # cmdclass={"build_ext": CMakeBuild},
-
     url="https://github.com/phot-lab/pyphot",
-    package_dir={"": '.'},  # '.' specify root dir
+    package_dir={"": "."},  # '.' specify root dir
     packages=find_packages(
-        where='.',
-        include=['phot*'],  # alternatively: `exclude=['additional*']`
+        where=".",
+        include=["phot*"],  # alternatively: `exclude=['additional*']`
     ),
     python_requires=">=3.7",
-    install_requires=[
-        'matplotlib>=3.5.2',
-        'numba>=0.55.2',
-        'numpy>=1.22.4',
-        'scikit_commpy>=0.7.0',
-        'scipy>=1.8.1'
-    ]
+    install_requires=["matplotlib>=3.5.2", "numba>=0.55.2", "numpy>=1.22.4", "scikit_commpy>=0.7.0", "scipy>=1.8.1"],
 )

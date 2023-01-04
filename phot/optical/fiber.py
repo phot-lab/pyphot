@@ -2,17 +2,18 @@ import numpy as np
 from numpy.fft import fftshift, fft, ifft, ifftshift
 
 
-def optical_fiber_channel(tx_signal_x: np.ndarray,
-                          tx_signal_y: np.ndarray,
-                          sampling_rate: float,
-                          span,
-                          num_steps,
-                          beta2,
-                          delta_z,
-                          gamma,
-                          alpha,
-                          L
-                          ):
+def optical_fiber_channel(
+    tx_signal_x: np.ndarray,
+    tx_signal_y: np.ndarray,
+    sampling_rate: float,
+    span,
+    num_steps,
+    beta2,
+    delta_z,
+    gamma,
+    alpha,
+    L,
+):
     """
 
     Args:
@@ -71,9 +72,9 @@ def optical_fiber_channel(tx_signal_x: np.ndarray,
 
             # 1/2 光纤色散
             # X 偏振
-            data_fft_x = data_fft_x * np.exp(-1j * (beta2 / 2) * (omega ** 2) * (delta_z / 2))
+            data_fft_x = data_fft_x * np.exp(-1j * (beta2 / 2) * (omega**2) * (delta_z / 2))
             # Y 偏振
-            data_fft_y = data_fft_y * np.exp(-1j * (beta2 / 2) * (omega ** 2) * (delta_z / 2))
+            data_fft_y = data_fft_y * np.exp(-1j * (beta2 / 2) * (omega**2) * (delta_z / 2))
 
             # 光纤非线性
             # X 偏振
@@ -91,9 +92,9 @@ def optical_fiber_channel(tx_signal_x: np.ndarray,
 
             # 1/2 光纤色散
             # X 偏振
-            data_fft_x = data_fft_x * np.exp(-1j * (beta2 / 2) * (omega ** 2) * (delta_z / 2))
+            data_fft_x = data_fft_x * np.exp(-1j * (beta2 / 2) * (omega**2) * (delta_z / 2))
             # Y 偏振
-            data_fft_y = data_fft_y * np.exp(-1j * (beta2 / 2) * (omega ** 2) * (delta_z / 2))
+            data_fft_y = data_fft_y * np.exp(-1j * (beta2 / 2) * (omega**2) * (delta_z / 2))
 
             # 1/2 信号衰减
             data_fft_x = data_fft_x * np.exp(-alpha * (delta_z / 2))

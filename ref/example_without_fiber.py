@@ -1,15 +1,14 @@
 import phot
 
 if __name__ == "__main__":
-    """ 双偏振光收发模块 + 光纤信道 """
     """本代码为程序主函数 本代码主要适用于 QPSK，16QAM，32QAM，64QAM 调制格式的单载波相干背靠背（B2B）信号"""
 
     phot.config(plot=False)  # 全局关闭画图
 
     # 设置全局系统仿真参数
-    num_symbols = 2**16  # 符号数目
-    bits_per_symbol = 6  # 2 for QPSK;4 for 16QAM; 5 for 32QAM; 6 for 64QAM  设置调制格式
-    total_baud = 20e9  # 信号波特率，符号率
+    num_symbols = 2**18  # 符号数目
+    bits_per_symbol = 4  # 2 for QPSK;4 for 16QAM; 5 for 32QAM; 6 for 64QAM  设置调制格式
+    total_baud = 64e9  # 信号波特率，符号率
     up_sampling_factor = 2  # 上采样倍数
     sampling_rate = up_sampling_factor * total_baud  # 信号采样率
 
@@ -25,7 +24,7 @@ if __name__ == "__main__":
     # 此处先存储发射端原始发送信号，作为最后比较BER
     prev_symbols_x, prev_symbols_y = symbols_x, symbols_y
 
-    RRC_ROLL_OFF = 0.02  # RRC脉冲整形滚降系数
+    RRC_ROLL_OFF = 0.1  # RRC脉冲整形滚降系数
     shaper = phot.PulseShaper(
         up_sampling_factor=up_sampling_factor,
         len_filter=128 * up_sampling_factor,
@@ -48,29 +47,17 @@ if __name__ == "__main__":
 
     """ 根据设置的OSNR来加入高斯白噪声 """
 
-    osnr_db = 50  # 设置系统OSNR，也就是光信号功率与噪声功率的比值，此处单位为dB
+    osnr_db = 25  # 设置系统OSNR，也就是光信号功率与噪声功率的比值，此处单位为dB
     signal_x, signal_y = phot.gaussian_noise(signal_x, signal_y, osnr_db, sampling_rate)
-
-    """ 发射端代码此处截止 """
-
-    """ Optical Fiber Channel """
-
-    # 1000公里 10米一步
-    span = 5  # 一个 span 代表多少 L
-    num_steps = 75  # 代表一个 L 多少步
-    L = 75  # 一个 L 代表多少 km
-    delta_z = L / num_steps  # 单步步长
-    alpha = 0.2
-    beta2 = 21.6676e-24
-    gamma = 1.3
-
-    signal_x, signal_y, power_x, power_y = phot.optical_fiber_channel(
-        signal_x, signal_y, sampling_rate, span, num_steps, beta2, delta_z, gamma, alpha, L
-    )
 
     """ 添加接收端激光器产生的相位噪声 """
     linewidth_rx = 150e3  # 激光器线宽
     signal_x, signal_y = phot.phase_noise(signal_x, signal_y, sampling_rate / total_baud, linewidth_rx, total_baud)
+
+    """
+    发射端代码此处截止
+    以下开始为接收端的代码
+    """
 
     """ 添加收发端激光器造成的频偏，就是发射端激光器和接收端激光器的中心频率的偏移差 """
 
@@ -90,9 +77,7 @@ if __name__ == "__main__":
 
     """ IQ正交化补偿，就是将之前的I/Q失衡的损伤补偿回来 """
 
-    signal_x, signal_y = phot.iq_freq_offset_and_compensation(
-        signal_x, signal_y, power_x, power_y, sampling_rate, beta2, span, L
-    )
+    signal_x, signal_y = phot.iq_freq_offset_and_compensation(signal_x, signal_y, sampling_rate)
 
     """ 接收端相应的RRC脉冲整形，具体的参数代码与发射端的RRC滤波器是一致的 """
     signal_x, signal_y = shaper.rx_shape(signal_x, signal_y)

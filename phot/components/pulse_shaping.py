@@ -30,9 +30,10 @@ class PulseShaper:
         self.fs = fs
 
         # 产生RRC滤波器
-        time_idx, rrc_filter = rrcosfilter(N=128 * self.up_sampling_factor, alpha=self.alpha, Ts=self.ts,
-                                           Fs=self.fs)  # up_sampling_factor*128为滤波器的长度
-        self.rrc_filter = (rrc_filter * np.sqrt(2))
+        time_idx, rrc_filter = rrcosfilter(
+            N=128 * self.up_sampling_factor, alpha=self.alpha, Ts=self.ts, Fs=self.fs
+        )  # up_sampling_factor*128为滤波器的长度
+        self.rrc_filter = rrc_filter * np.sqrt(2)
 
     def tx_shape(self, signal_x, signal_y):
         # 先进行插0上采样，上采样倍数为 up_sampling_factor

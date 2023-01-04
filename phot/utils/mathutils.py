@@ -18,7 +18,7 @@ Supported by: National Key Research and Development Program of China
 import numpy as np
 
 
-def gen_bits(length, seed=None):
+def gen_bits(length):
     """
     Generate random 0 1 bits sequence
 
@@ -29,7 +29,6 @@ def gen_bits(length, seed=None):
     Returns:
 
     """
-    rng = np.random.default_rng(seed=seed)
-    data_x = rng.integers(0, 2, (length, 1))  # 采用randint函数随机产生0 1码元序列x
-    data_y = rng.integers(0, 2, (length, 1))  # 采用randint函数随机产生0 1码元序列y
+    data_x = np.random.randint(0, 2, (length, 1))  # 采用randint函数随机产生0 1码元序列x
+    data_y = np.random.randint(0, 2, (length, 1))  # 采用randint函数随机产生0 1码元序列x
     return data_x, data_y
