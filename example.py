@@ -1,10 +1,10 @@
 import phot
 
 if __name__ == "__main__":
-    """ 双偏振光收发模块 + 光纤信道 """
+    """双偏振光收发模块 + 光纤信道"""
     """本代码为程序主函数 本代码主要适用于 QPSK，16QAM，32QAM，64QAM 调制格式的单载波相干背靠背（B2B）信号"""
 
-    phot.config(plot=False)  # 全局关闭画图
+    # phot.config(plot=False)  # 全局关闭画图
 
     # 设置全局系统仿真参数
     num_symbols = 2**16  # 符号数目

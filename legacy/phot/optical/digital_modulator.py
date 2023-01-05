@@ -1,6 +1,6 @@
-from deprecated.phot.values import globals
-from deprecated.phot.utils import mathutils, logger
-from deprecated.phot.optical import signal
+from ..values import globals
+from ..utils import mathutils, logger
+from .dsp import my_filter, up_sample, interp
 from . import format
 from .sample import seq2samp
 import numpy as np
@@ -8,14 +8,16 @@ import math
 
 
 class DigitalModulator:
-    def __init__(self, mod_format: str = None,
-                 pulse_type: str = None,
-                 rolloff: float = 0,
-                 pre_emphasis: str = "asin",
-                 norm: str = "iid",
-                 bandwidth=None,
-                 duty=1
-                 ):
+    def __init__(
+        self,
+        mod_format: str = None,
+        pulse_type: str = None,
+        rolloff: float = 0,
+        pre_emphasis: str = "asin",
+        norm: str = "iid",
+        bandwidth=None,
+        duty=1,
+    ):
         self.pre_emphasis = pre_emphasis  # digital pre-emphasis type
         self.bandwidth = bandwidth
         self.rolloff = rolloff  # pulse roll-off
@@ -26,10 +28,17 @@ class DigitalModulator:
         self.num_samp = None
         self.fir_taps = None
         self.num_fft = globals.NUM_SAMP
-        if pulse_type != "rc" and pulse_type != "rootrc" and pulse_type != "userfir" and pulse_type != "dirac" and pulse_type != "costails" and pulse_type != "rect":
+        if (
+            pulse_type != "rc"
+            and pulse_type != "rootrc"
+            and pulse_type != "userfir"
+            and pulse_type != "dirac"
+            and pulse_type != "costails"
+            and pulse_type != "rect"
+        ):
             if self.bandwidth is None:
                 raise RuntimeError("Missing filter bandwidth for pulse shaping")
-            signal.my_filter(pulse_type, 1, self.bandwidth, self.param)
+            my_filter(pulse_type, 1, self.bandwidth, self.param)
 
         num_tini = globals.SAMP_FREQ / globals._sym_rate  # Wished samples per symbol
         nt, nd = mathutils.rat(num_tini)  # oversample, then down sample at the end
@@ -44,9 +53,10 @@ class DigitalModulator:
 
         if nt / num_tini > 10:
             logger.warning(
-                'resampling may take big times/memory. Consider using sampling '
-                'or symbol rates such that \n[N,D]=rat(GSTATE.FSAMPLING/symbrate) '
-                'contains a small integer N (now N={}, D={}). See also inigstate.m.'.format(nt, nd))
+                "resampling may take big times/memory. Consider using sampling "
+                "or symbol rates such that \n[N,D]=rat(GSTATE.FSAMPLING/symbrate) "
+                "contains a small integer N (now N={}, D={}). See also inigstate.m.".format(nt, nd)
+            )
 
         self.pulse_type = pulse_type
         self.num_tini = num_tini
@@ -63,10 +73,10 @@ class DigitalModulator:
         num_sym = np.size(seq)
         num_sym_up_down = math.ceil((self.num_fft - 1) / self.num_tini)
         if num_sym < num_sym_up_down:
-            raise RuntimeError('Too few symbols to fill the required number of samples.')
+            raise RuntimeError("Too few symbols to fill the required number of samples.")
         elif num_sym > num_sym_up_down:
             num_sym = num_sym_up_down
-            logger.warning('Too many symbols. Sequence truncated to {} symbols.'.format(num_sym))
+            logger.warning("Too many symbols. Sequence truncated to {} symbols.".format(num_sym))
 
         # 1. convert the pattern into stars of the constellations
         level = seq2samp(seq, self.mod_format)
@@ -79,7 +89,7 @@ class DigitalModulator:
             # Apply DAC (Note: resample.m generates border effects. interp is better)
             if np.mod(self.nt, self.num_samp) == 0:
                 # The result of this function is a little different with MATLAB's interp
-                elec = signal.interp(elec, self.nt / self.num_samp)
+                elec = interp(elec, self.nt / self.num_samp)
             else:
                 # Unfinished here, Optilux calls circresample
                 # elec = circresample(elec,Nt,Nsps); % (circular) resample
@@ -111,7 +121,14 @@ class DigitalModulator:
             self.duty = 1
         elif self.duty <= 0 or self.duty > 1:
             raise RuntimeError("must be 0 < duty <= 1 ")
-        if pulse_type != "rc" and pulse_type != "rootrc" and pulse_type != "userfir" and pulse_type != "dirac" and pulse_type != "rect" and pulse_type != "costails":
+        if (
+            pulse_type != "rc"
+            and pulse_type != "rootrc"
+            and pulse_type != "userfir"
+            and pulse_type != "dirac"
+            and pulse_type != "rect"
+            and pulse_type != "costails"
+        ):
             flag = True  # the pulse is the impulse response of my filter
             if self.param is None:
                 self.param = 0
@@ -129,14 +146,14 @@ class DigitalModulator:
                     raise RuntimeError("Too many taps for FIR")
                 if not np.isrealobj(self.fir_taps):
                     raise RuntimeError("FIR taps must be real.")
-                self.fir_taps = np.reshape(self.fir_taps, (-1, 1), order='F')
+                self.fir_taps = np.reshape(self.fir_taps, (-1, 1), order="F")
 
-        aku = signal.up_sample(ak, num_samp)
-        aku = aku.ravel(order='F')
-        aku = np.fft.fft(aku[0:num_samp * num_sym])  # truncate if necessary
+        aku = up_sample(ak, num_samp)
+        aku = aku.ravel(order="F")
+        aku = np.fft.fft(aku[0 : num_samp * num_sym])  # truncate if necessary
         if flag:  # filter the signal
             ffir = self.duty * np.fft.fftshift(np.arange(-num_samp / 2, num_sym / 2, 1 / num_sym))
-            hfir = signal.my_filter(pulse_type, ffir.reshape(-1, 1), self.bandwidth, self.param)
+            hfir = my_filter(pulse_type, ffir.reshape(-1, 1), self.bandwidth, self.param)
         else:
             el_pulse = self._pulse_design(pulse_type, num_samp, num_sym)  # single pulse
             hfir = np.fft.fft(np.fft.fftshift(el_pulse), axis=0)
@@ -149,7 +166,8 @@ class DigitalModulator:
 
         if np.size(elec) < num_fft:
             raise RuntimeError(
-                "It is impossible to get the desired number of samples with the given pattern and sampling rate")
+                "It is impossible to get the desired number of samples with the given pattern and sampling rate"
+            )
         elif np.size(elec) > num_fft:
             elec = elec[np.ceil(np.arange(0, num_fft * nd, nd))]
         # normalize to unit power
@@ -159,7 +177,8 @@ class DigitalModulator:
             var_ak = format_info.sym_var  # expected variance
             mean_ak = format_info.sym_mean  # expected value or mean
             avg = (var_ak * np.sum(np.square(np.abs(hfir)))) / num_sym + np.square(np.abs(mean_ak)) * np.sum(
-                np.square(np.abs(hfir[0::num_sym]))) / np.square(num_samp)
+                np.square(np.abs(hfir[0::num_sym]))
+            ) / np.square(num_samp)
         elif self.norm == "mean":
             avg = np.mean(np.square(np.abs(elec)))
         elif self.norm == "no":
@@ -183,10 +202,12 @@ class DigitalModulator:
         if pulse_type == "rc" or pulse_type == "rootrc":
             tfir = (1 / self.duty) * np.arange(-num_sym / 2, num_sym / 2, 1 / num_samp)
             tfir = np.reshape(tfir, (-1, 1))
-            el_pulse = np.sinc(tfir) * np.cos((math.pi * tfir * self.rolloff)) / (
-                    1 - np.square(2 * self.rolloff * tfir))
-            el_pulse[np.logical_not(np.isfinite(el_pulse))] = self.rolloff / 2 * np.sin(
-                math.pi / 2 / self.rolloff)  # Avoid NaN
+            el_pulse = (
+                np.sinc(tfir) * np.cos((math.pi * tfir * self.rolloff)) / (1 - np.square(2 * self.rolloff * tfir))
+            )
+            el_pulse[np.logical_not(np.isfinite(el_pulse))] = (
+                self.rolloff / 2 * np.sin(math.pi / 2 / self.rolloff)
+            )  # Avoid NaN
         elif pulse_type == "costails":
             nl = round(0.5 * (1 - self.rolloff) * self.duty * num_samp)  # start index of cos roll-off
             nr = self.duty * num_samp - nl  # end index of cos roll-off
@@ -198,9 +219,11 @@ class DigitalModulator:
             h_period = self.duty * num_samp - 2 * nl
             if h_period != 0:
                 el_pulse[num_cos + num_samp * num_sym / 2] = 0.5 * (
-                        1 + np.cos(math.pi / h_period * (num_cos - nl + 0.5)))
-            el_pulse[0: num_samp * num_sym / 2] = np.flipud(
-                el_pulse[num_samp * num_sym / 2: num_samp * num_sym])  # first half of the pulse
+                    1 + np.cos(math.pi / h_period * (num_cos - nl + 0.5))
+                )
+            el_pulse[0 : num_samp * num_sym / 2] = np.flipud(
+                el_pulse[num_samp * num_sym / 2 : num_samp * num_sym]
+            )  # first half of the pulse
         else:
             raise RuntimeError("The pulse ptype does not exist")
         return el_pulse

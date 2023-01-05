@@ -1,4 +1,4 @@
-from deprecated.phot.utils import logger
+from .logging import logger
 import numpy as np
 
 

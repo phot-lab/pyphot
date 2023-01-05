@@ -1,6 +1,6 @@
 import numpy as np
-from deprecated.phot.optical import format
-from deprecated.phot.values import globals
+from . import format
+from ..values import globals
 
 
 def rand(size, seed=None):

@@ -1,48 +1,48 @@
-# Development document
+# 开发者文档
 
-## Clone the repo
+## Clone 仓库
 
-Note the `--recursive` option which is needed for the `pybind11` submodule:
+注意 `--recursive` 参数是必要的，因为我们的仓库依赖了其他的子模块。
 
 ```shell
 git clone --recursive https://github.com/phot-lab/pyphot.git
 ```
 
-## Test the project locally
+## 本地安装运行
 
-Under the root dir
+在主目录下：
 
 ```shell
 pip install -e .
 ```
 
-Then you can use the modules and functions of **PyPhot** simply by `import phot`.
+然后你就可以通过 `import phot` 来使用 **PyPhot** 的模块和函数。
 
-## Generate requirements.txt
+## 生成 requirements.txt
 
-**requirements.txt** is useful for the installation of related dependencies, you can generate it by command line tool `pipreqs`, enter the root directory and execute this command:
+你可以在主目录下通过以下命令生成 **requirements.txt** ，注意你需要拥有 `pipreqs` 命令行工具：
 
 ```shell
 pipreqs . --mode gt --force --ignore ./test
 ```
 
-## Generate distribution files
+## 生成 distribution 文件
 
-In the same directory with the **setup.py**:
+在 **setup.py** 的相同目录下:
 
 ```shell
-# Build both source and binary distribution files
+# 同时构建 source and binary distribution files
 python3 -m build
 ```
 
-## Upload package to PyPI
+## 上传 package 到 PyPI
 
-Use this command to upload to PyPI, notice that you should ensure the **project version** is different with the exiasting one on PyPI, and you need to **clear** the `dist` directory first because the old version distribution file will remain.
+使用以下命令上传到 PyPI，注意你需要确保项目版本和 PyPI上已存在的项目版本不一样，否则会产生冲突，同时你需要清除 `dist` 目录下已存在的旧版 distribution 文件。
 
 ```shell
 python3 -m twine upload dist/*
 ```
 
-## Legacy files
+## 旧版 PyPhot
 
-The legacy phot module is in the `legacy` folder. It stores old version of `phot` project and has the value of reference.
+旧版 PyPhot 在 `legacy` 目录下。

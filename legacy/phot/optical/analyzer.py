@@ -1,5 +1,5 @@
 import numpy as np
-from deprecated.phot.values import globals
+from ..values import globals
 import math
 from .format import get_format_info
 import matplotlib.pyplot as plt
@@ -24,7 +24,8 @@ class Analyzer:
     def eval_eye(self, seq: np.ndarray, sig: np.ndarray, plot_eye: bool = False):
         num_pol = np.shape(sig)[1]
         samples_mat = np.transpose(
-            np.reshape(np.roll(sig, self._num_shift), (self._num_pts, int(self._num_sym * num_pol)), order='F'))
+            np.reshape(np.roll(sig, self._num_shift), (self._num_pts, int(self._num_sym * num_pol)), order="F")
+        )
         samples_mat = np.real(samples_mat)  # Only need real part to draw eye
 
         format_info = get_format_info(self.mod_format)
@@ -51,26 +52,26 @@ class Analyzer:
 
         if plot_eye:
             tim = np.arange(-1 / 2, 1 / 2, 1 / self._num_pts)
-            plt.figure(figsize=(8, 6), layout='constrained')
+            plt.figure(figsize=(8, 6), layout="constrained")
             if num_pol == 1:
                 plt.plot(tim, samples_mat.T, color=None)
             else:
                 # dual polarization situation unfinished
                 pass
-            plt.xlabel('Normalized time [symbols]')
-            plt.ylabel('Eye')
-            plt.title('Eye Graph')
+            plt.xlabel("Normalized time [symbols]")
+            plt.ylabel("Eye")
+            plt.title("Eye Graph")
             plt.show()
 
         return eye_opening
 
 
 def plot_constell(sig: np.ndarray) -> None:
-    axis_x = np.real(sig).ravel(order='F')
-    axis_y = np.imag(sig).ravel(order='F')
+    axis_x = np.real(sig).ravel(order="F")
+    axis_y = np.imag(sig).ravel(order="F")
     plt.scatter(axis_y, axis_x, s=2)
-    plt.xlabel('Real')
-    plt.ylabel('Imag')
-    plt.title('Constellation Diagram')
+    plt.xlabel("Real")
+    plt.ylabel("Imag")
+    plt.title("Constellation Diagram")
     plt.grid()
     plt.show()

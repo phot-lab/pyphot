@@ -1,9 +1,8 @@
 import numpy as np
 import math
 
-from ... import phot
-from deprecated.phot.values import constants, globals
-from deprecated.phot.utils import logger, mathutils
+from ..values import constants, globals
+from ..utils import logger, mathutils, to_cpu, to_gpu
 from .lightwave import Lightwave
 from typing import Tuple
 
@@ -19,22 +18,23 @@ class Linear:
 class Fiber:
     _DEF_PLATES = 100  # number of waveplates when birefringence is on
     _DEF_BEAT_LENGTH = 20  # Default beat length [m]
-    _DEF_STEP_UPDATE = 'cle'  # Default step-updating rule
+    _DEF_STEP_UPDATE = "cle"  # Default step-updating rule
     _DEF_IS_SYMMETRIC = False  # Default step computation
     _DEF_PHIFWM_CLE = 20  # Default X.dphimax [rad] for CLE stepupd rule
     _DEF_PHIFWM_NLP = 4  # Default X.dphimax [rad] for NLP & X.dphi1fwm
     _DEF_PHI_NLP = 0.003  # Default X.dphimax [rad] for NLP & ~X.dphi1fwm
 
-    def __init__(self,
-                 length: int = 10000,
-                 lam: int = 1550,
-                 alpha_b: float = 1,
-                 dispersion: float = 17,
-                 slope: float = 0,
-                 n2: float = 0,
-                 eff_area: float = 80,
-                 coupling: str = None
-                 ) -> None:
+    def __init__(
+        self,
+        length: int = 10000,
+        lam: int = 1550,
+        alpha_b: float = 1,
+        dispersion: float = 17,
+        slope: float = 0,
+        n2: float = 0,
+        eff_area: float = 80,
+        coupling: str = None,
+    ) -> None:
         """
 
         :param length: Fiber length [m]
@@ -144,8 +144,9 @@ class Fiber:
                 self.num_plates = Fiber._DEF_PLATES  # default value
             len_corr = self.length / self.num_plates  # waveplate length [m] (aka correlation length)
 
-            diff_group_delay = self.pmd_param / math.sqrt(len_corr) * math.sqrt(3 * math.pi / 8) / math.sqrt(
-                1000) * 1e-3  # Differential
+            diff_group_delay = (
+                self.pmd_param / math.sqrt(len_corr) * math.sqrt(3 * math.pi / 8) / math.sqrt(1000) * 1e-3
+            )  # Differential
             # group delay (DGD) per unit length [ns/m] @ x.lambda within a
             # waveplate. To get [Df00] remember that within a waveplate the delay is dgd1*lcorr.
             if self.linear is None:
@@ -218,10 +219,14 @@ class Fiber:
         # Linear Parameters
         omega = 2 * math.pi * np.reshape(globals.FN, (-1, 1))  # angular frequency [rad/ns]
         b10 = 0  # retarded time frame
-        b20 = -(np.square(
-            self.lam)) / 2 / math.pi / constants.LIGHT_SPEED * self.dispersion * 1e-6  # beta2 [ns^2/m] @ x.lambda
-        b30 = np.square((self.lam / 2 / math.pi / constants.LIGHT_SPEED)) * (
-                2 * self.lam * self.dispersion + np.square(self.lam) * self.slope) * 1e-6
+        b20 = (
+            -(np.square(self.lam)) / 2 / math.pi / constants.LIGHT_SPEED * self.dispersion * 1e-6
+        )  # beta2 [ns^2/m] @ x.lambda
+        b30 = (
+            np.square((self.lam / 2 / math.pi / constants.LIGHT_SPEED))
+            * (2 * self.lam * self.dispersion + np.square(self.lam) * self.slope)
+            * 1e-6
+        )
         betat = np.zeros(np.shape(lightwave.field))
 
         d_omega_i0 = 2 * math.pi * constants.LIGHT_SPEED * (1 / lightwave.lam - 1 / self.lam)  # [1/ns]
@@ -231,7 +236,7 @@ class Fiber:
             beta2 = b20 + b30 * d_omega_i0  # beta2 [ns^2/m] @ E.lambda
             beta3 = b30  # [ns^3/m] @ E.lambda
 
-            betat[:, ipm] = np.ravel(omega * (beta1 + omega * (beta2 / 2 + omega * beta3 / 6)), order='F')
+            betat[:, ipm] = np.ravel(omega * (beta1 + omega * (beta2 / 2 + omega * beta3 / 6)), order="F")
             # betat: deterministic beta coefficient [1/m]
             if self._isy:  # Add DGD on polarizations
                 column = np.reshape(betat[:, ipm], (-1, 1)) - self._diff_group_delay / 2 * omega
@@ -244,18 +249,24 @@ class Fiber:
             # frequency of the lowpass equivalent signal by convention)
 
             central_lam = constants.LIGHT_SPEED / central_freq  # central wavelength [nm]
-            d_omega_ic = 2 * math.pi * constants.LIGHT_SPEED * (
-                    1 / lightwave.lam - 1 / central_lam)  # Domega [1/ns] channel i vs central lambda
-            d_omega_c0 = 2 * math.pi * constants.LIGHT_SPEED * (
-                    1 / central_lam - 1 / self.lam)  # Domega [1/ns] central lambda vs lambda fiber parameters
-            b1 = b10 + b20 * d_omega_ic + 0.5 * b30 * (
-                    np.square(d_omega_i0) - np.square(d_omega_c0))  # ch's beta1 [ns/m]
+            d_omega_ic = (
+                2 * math.pi * constants.LIGHT_SPEED * (1 / lightwave.lam - 1 / central_lam)
+            )  # Domega [1/ns] channel i vs central lambda
+            d_omega_c0 = (
+                2 * math.pi * constants.LIGHT_SPEED * (1 / central_lam - 1 / self.lam)
+            )  # Domega [1/ns] central lambda vs lambda fiber parameters
+            b1 = (
+                b10 + b20 * d_omega_ic + 0.5 * b30 * (np.square(d_omega_i0) - np.square(d_omega_c0))
+            )  # ch's beta1 [ns/m]
             beta1 = b1 + self._diff_group_delay / 2  # [ns/m] @ GSTATE.LAMBDA
             beta2 = b20 + b30 * d_omega_i0  # beta2 [ns^2/m]@ E.lambda
 
             for i in range(np.size(lightwave.lam)):
-                betat[:, i] = np.dot(omega, beta1.flat[i]) + 0.5 * np.square(
-                    omega) * beta2.flat[i] + np.power(omega, 3).dot(b30) / 6  # beta coefficient [1/m]
+                betat[:, i] = (
+                    np.dot(omega, beta1.flat[i])
+                    + 0.5 * np.square(omega) * beta2.flat[i]
+                    + np.power(omega, 3).dot(b30) / 6
+                )  # beta coefficient [1/m]
                 # Unfinished yet, Optilux code line: 446
 
         # GPU codes unfinished
@@ -361,11 +372,13 @@ class Fiber:
                     self._bandwidth = globals.SAMP_FREQ
                 spac = self._bandwidth * np.square(self.lam) / constants.LIGHT_SPEED  # bandwidth in [nm]
                 if self._is_unique:  # min: worst case among spatial modes
-                    step = np.min(self._dphi_max / np.abs(self.dispersion) / (
-                            2 * math.pi * spac * self._bandwidth * 1e-3) * 1e3)  # [m]
+                    step = np.min(
+                        self._dphi_max / np.abs(self.dispersion) / (2 * math.pi * spac * self._bandwidth * 1e-3) * 1e3
+                    )  # [m]
                 else:  # separate fields: FWM bandwidth is substituted by walk-off bandwidth
-                    step = np.min(self._dphi_max / np.abs(self.dispersion) / (
-                            2 * math.pi * spac @ self._bandwidth * 1e-3) * 1e3)  # [m]
+                    step = np.min(
+                        self._dphi_max / np.abs(self.dispersion) / (2 * math.pi * spac @ self._bandwidth * 1e-3) * 1e3
+                    )  # [m]
                 if step > self.dz_max:
                     step = self.dz_max
                 if self.step_update == "nlp":  # nonlinear phase criterion
@@ -449,7 +462,7 @@ class Fiber:
 
     def _linear_step(self, linear: Linear, betat, dzb, n_index, field: np.ndarray) -> np.ndarray:
         if self._gpu:
-            field = phot.to_gpu(field)
+            field = to_gpu(field)
         field = np.fft.fft(field, axis=0)
         for nt in range(np.size(dzb)):  # the step is made of multi-waveplates
             if np.isscalar(n_index):
@@ -462,7 +475,7 @@ class Fiber:
                     field = field * np.conj(linear.matin)
                     temp = mathutils.fast_exp(-(betat + linear.db0) * dzb)
                     if self._gpu:
-                        temp = phot.to_gpu(temp)
+                        temp = to_gpu(temp)
                     field = field * temp
                     field = field * linear.matin
                 else:
@@ -475,7 +488,7 @@ class Fiber:
                 field = _fast_matmul(field, linear.matin[:, :, index].T)  # return in the reference system
         field = np.fft.ifft(field, axis=0)
         if self._gpu:
-            field = phot.to_cpu(field)
+            field = to_cpu(field)
         return field
 
     def _nonlinear_step(self, field: np.ndarray, dz: float) -> np.ndarray:
@@ -489,8 +502,11 @@ class Fiber:
             exp_phi = mathutils.fast_exp(-phi)
             field = exp_phi * field
             if not self.is_manakov and np.shape(field)[1] > 1:  # CNLSE, only in dual-polarization
-                stroke = 2 * (np.real(field[:, 0]) * np.imag(field[:, 1]) - np.imag(field[:, 0]) * np.real(field[:, 1])
-                              ) * gam_len_eff[0]  # stokes comp. #3
+                stroke = (
+                    2
+                    * (np.real(field[:, 0]) * np.imag(field[:, 1]) - np.imag(field[:, 0]) * np.real(field[:, 1]))
+                    * gam_len_eff[0]
+                )  # stokes comp. #3
                 exp_gam_len_eff = mathutils.fast_exp(stroke / 3)
                 cos_phi = np.real(exp_gam_len_eff)  # (fast) cos(gamleff*s3/3)
                 sin_phi = np.imag(exp_gam_len_eff)  # (fast) sin(gamleff*s3/3)
@@ -526,9 +542,11 @@ def _fast_matmul(array: np.ndarray, other) -> np.ndarray:
     """
     if not np.isscalar(other):
         rows, cols = np.shape(array)
-        array = np.reshape(np.transpose(np.reshape(array, (rows, 2, -1), order='F'), (0, 2, 1)),
-                           (-1, 2), order='F')  # 2: polarizations
+        array = np.reshape(
+            np.transpose(np.reshape(array, (rows, 2, -1), order="F"), (0, 2, 1)), (-1, 2), order="F"
+        )  # 2: polarizations
         array = array @ other
-        array = np.reshape(np.transpose(np.reshape(array, (rows, int(cols / 2), -1), order='F'), (0, 2, 1)),
-                           (rows, -1), order='F')
+        array = np.reshape(
+            np.transpose(np.reshape(array, (rows, int(cols / 2), -1), order="F"), (0, 2, 1)), (rows, -1), order="F"
+        )
     return array

@@ -1,4 +1,4 @@
-from .signal import awgn
+from .dsp import awgn
 import numpy as np
 
 

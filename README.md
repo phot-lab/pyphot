@@ -1,19 +1,19 @@
 # PyPhot
 
-A Python library for the simulation of optical fiber transmission, characterized by the ability of running on both CPU and GPU to gain powerful acceleration.
+一个用于光纤仿真运算的 Python 库。
 
-## Get started
+## 运行代码
 
 ```shell
-# Install PyPhot library
+# 安装 PyPhot
 pip install phot
 
-# Run example
+# 运行代码示例
 python3 example.py
 ```
 
-The Python file **example.py** under the root directory showing how to use our API (for PyPhotEngine). Please read it carefully.
+主目录下的 Python 文件 **example.py** 展示了如何使用我们的 API，请仔细阅读。
 
-## Development Document
+## 开发者文档
 
-For developers, check [this](docs/dev-doc.md).
+[开发者文档](docs/developer-guide.md)提供了对于开发者的引导。

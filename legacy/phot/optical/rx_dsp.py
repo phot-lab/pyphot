@@ -1,26 +1,26 @@
 import numpy as np
 import math
-from deprecated.phot.values import globals
-from .signal import my_filter
+from ..values import globals
+from .dsp import my_filter, up_sample
 from .sample import seq2samp
-from .signal import up_sample
-from deprecated.phot.utils import mathutils
-from deprecated.phot.utils import logger
+from ..utils import mathutils, logger
 
 
 class RxDsp:
-    def __init__(self, elec_filter_type: str,
-                 elec_bandwidth,
-                 recovery: str,
-                 mod_format: str,
-                 seq=None,
-                 interp: str = 'fine',
-                 elec_param=math.nan
-                 ):
+    def __init__(
+        self,
+        elec_filter_type: str,
+        elec_bandwidth,
+        recovery: str,
+        mod_format: str,
+        seq=None,
+        interp: str = "fine",
+        elec_param=math.nan,
+    ):
         if globals.SAMP_FREQ is not None:
             num_pts = globals.SAMP_FREQ / globals._sym_rate  # number of points per symbol
             if np.floor(num_pts) != num_pts:
-                raise RuntimeError('Number of points per symbol is not an integer.')
+                raise RuntimeError("Number of points per symbol is not an integer.")
             pass
         else:
             num_pts = 1
@@ -51,7 +51,7 @@ class RxDsp:
         elec_sig = clock_recovery(elec_sig, self.seq, self.recovery, self.interp, self.mod_format)
 
         # 3. Sample (or downsample and MIMO)
-        ak = elec_sig[0::int(self._num_pts), :]
+        ak = elec_sig[0 :: int(self._num_pts), :]
 
         # 4. Automatic gain control
         symbols, gain_factor = agc(self.seq, ak, self.mod_format)
@@ -87,16 +87,17 @@ def lowpass_filter(elec_sig, elec_filter_type: str, elec_bandwidth, elec_param=m
 def clock_recovery(signal: np.ndarray, seq: np.ndarray, recovery: str, interp: str, mod_format: str):
     num_cols = np.shape(signal)[1]  # number of signals
     if num_cols != np.shape(seq)[1]:
-        raise RuntimeError('The sequence must be in decimal form.')
+        raise RuntimeError("The sequence must be in decimal form.")
     rho = np.zeros((num_cols, num_cols))
     ns = np.zeros((num_cols, num_cols))
     for m1 in range(num_cols):
         for m2 in range(num_cols):
-            ns[m1][m2], rho[m1][m2] = time_estimate(np.reshape(signal[:, m1], (-1, 1)), np.reshape(seq[:, m2], (-1, 1)),
-                                                    recovery, interp, mod_format)
+            ns[m1][m2], rho[m1][m2] = time_estimate(
+                np.reshape(signal[:, m1], (-1, 1)), np.reshape(seq[:, m2], (-1, 1)), recovery, interp, mod_format
+            )
     index_max = np.argmax(rho, axis=1)  # best candidate. imax(m1)~= m1 is an indication of signal exchange.
     if len(np.unique(index_max)) != len(index_max):
-        logger.warning('Clock recovery by the function clockrec failed.')
+        logger.warning("Clock recovery by the function clockrec failed.")
     else:
         signal = signal[:, index_max]  # signal exchange (if necessary)
         for m1 in range(num_cols):
@@ -106,16 +107,16 @@ def clock_recovery(signal: np.ndarray, seq: np.ndarray, recovery: str, interp: s
 
 def time_estimate(signal: np.ndarray, seq, recovery: str, interp: str, mod_format: str):
     if recovery is None:
-        raise RuntimeError('Unknown timing recovery method.')
+        raise RuntimeError("Unknown timing recovery method.")
 
     # Timing recovery
-    if recovery == 'da':
+    if recovery == "da":
         ns, rho = mlda_time(signal, seq, interp, mod_format)
-    elif recovery == '':
+    elif recovery == "":
         ns = math.nan
         rho = math.nan
     else:
-        raise RuntimeError('Unknown timing recovery method.')
+        raise RuntimeError("Unknown timing recovery method.")
 
     return ns, rho
 
@@ -126,7 +127,7 @@ def mlda_time(signal: np.ndarray, seq, interp: str, mod_format: str):
     num_sym = len(seq)
     num_pts = size_fft / num_sym
     if np.remainder(num_pts, 1) != 0:
-        raise RuntimeError('Fractional number of samples per symbol has not yet done.')
+        raise RuntimeError("Fractional number of samples per symbol has not yet done.")
 
     # Go
     ak_id = seq2samp(seq, mod_format)
@@ -138,18 +139,20 @@ def mlda_time(signal: np.ndarray, seq, interp: str, mod_format: str):
 
     # Fine tuning
     if interp is not None:
-        if interp == 'fine':  # fine tuning
+        if interp == "fine":  # fine tuning
             i1 = mathutils.n_mod(index_max, size_fft) - 1
             i2 = mathutils.n_mod(index_max + 1, size_fft) - 1
             i3 = mathutils.n_mod(index_max + 2, size_fft) - 1
             # max of parabola passing for x-coordinates [1 2 3] with values corr.
             ifine = (5 * corr[i1] + 3 * corr[i3] - 8 * corr[i2]) / (corr[i1] + corr[i3] - 2 * corr[i2]) / 2
-            index_max = mathutils.n_mod(ifine + index_max - 2, size_fft)  # -2: because central point is at coordinate 2
-        elif interp == 'nearest':  # coarse (but faster) tuning
+            index_max = mathutils.n_mod(
+                ifine + index_max - 2, size_fft
+            )  # -2: because central point is at coordinate 2
+        elif interp == "nearest":  # coarse (but faster) tuning
             # nothing to do
             pass
         else:
-            raise RuntimeError('Unknown time interpolation method.')
+            raise RuntimeError("Unknown time interpolation method.")
     return index_max, rho
 
 
@@ -170,7 +173,9 @@ def fix_delay(signal: np.ndarray, ns):
             else:
                 omega = 2 * math.pi * globals.FN / globals.SAMP_FREQ
                 omega = np.reshape(omega, (-1, 1))
-                signal[:, k] = np.fft.ifft(np.fft.fft(signal[:, k], axis=0) * mathutils.fast_exp(omega * ns[k]), axis=0)
+                signal[:, k] = np.fft.ifft(
+                    np.fft.fft(signal[:, k], axis=0) * mathutils.fast_exp(omega * ns[k]), axis=0
+                )
 
     return signal
 
@@ -185,5 +190,5 @@ def agc(seq: np.ndarray, ak: np.ndarray, mod_format: str):
         gain_factor = np.sum(ak * np.conj(data_id)) / np.sum(data_id * np.conj(data_id))
         ak = ak / gain_factor
     else:
-        raise RuntimeError('Not complete yet!')
+        raise RuntimeError("Not complete yet!")
     return ak, gain_factor
