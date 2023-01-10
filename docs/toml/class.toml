@@ -1,0 +1,60 @@
+# 一个类的配置文件的 example
+
+# 底层运算库的代码
+# 创建类的实例
+# shaper = phot.PulseShaper(up_sampling_factor, alpha)
+
+# 该类有两个成员方法
+# signal_x, signal_y = shaper.tx_shape(symbols_x, symbols_y) # 发送端脉冲整形
+# signal_x, signal_y = shaper.rx_shape(signal_x, signal_y) # 接收端脉冲整形
+
+[PulseShaper] # 类在底层运算库的名字
+
+class = true                                                   # 意思是：这是类，不是函数
+name = "Pulse shaper"                                          # 前端的名字
+description = "Quadrature Amplitude Modulation (QAM) Modulate" # 描述信息
+is_analyzer = false                                            # 是否为分析器
+
+[PulseShaper.parameters] # 函数参数
+
+[PulseShaper.parameters.up_sampling_factor] # 第一个参数
+frontend_name = "Up sampling factor" # 前端显示名称
+data_type = "int"                    # 该参数的数据类型，方便进行数据类型转换
+value = "2"                          # 该参数的默认值
+unit = ""                            # 由前端选择的单位, 计算引擎需要以此设置新单位，”“意思是没有单位
+phot_unit = ""                       # 底层运算库的默认单位，计算引擎需要以此设置旧单位
+
+[PulseShaper.parameters.alpha] # 第二个参数
+frontend_name = "Roll-off coefficient" # 前端显示名称
+data_type = "float"                    # 该参数的数据类型，方便进行数据类型转换
+value = "0.02"                         # 该参数的默认值
+unit = ""                              # 由前端选择的单位, 计算引擎需要以此设置新单位，”“意思是没有单位
+phot_unit = ""                         # 底层运算库的默认单位，计算引擎需要以此设置旧单位
+
+[PulseShaper.methods] # 类的成员方法
+
+# 第一个成员方法
+[PulseShaper.methods.tx_shape.input]
+
+# Key：底层运算库的名字，Value：前端显示的名字
+symbols_x = "Symbols x"
+symbols_y = "Symbols y"
+
+[PulseShaper.methods.tx_shape.output]
+
+# Key：底层运算库的名字，Value：前端显示的名字
+signal_x = "Signal x"
+signal_y = "Signal y"
+
+# 第二个成员方法
+[PulseShaper.methods.rx_shape.input]
+
+# Key：底层运算库的名字，Value：前端显示的名字
+signal_x = "Signal x"
+signal_y = "Signal y"
+
+[PulseShaper.methods.rx_shape.output]
+
+# Key：底层运算库的名字，Value：前端显示的名字
+signal_x = "Signal x"
+signal_y = "Signal y"

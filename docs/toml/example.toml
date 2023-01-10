@@ -1,0 +1,40 @@
+# 一个组件配置文件的 Example
+
+# 底层运算库的代码
+# symbols_x, symbols_y = phot.qam_modulate(data_x, data_y, bits_per_symbol)
+
+[qam_modulate] # 函数在底层运算库的名字
+
+class = false                                                   # 意思是：这不是个类，这是个函数
+class_name = "qam_modulate"                                     # 如果是类，在底层运算库中的类名
+calculation_method = "qam_modulate"                             # 实际调用函数时的名字
+description = "Quadrature Amplitude Modulation (QAM) Modulate"  # 描述信息
+is_analyzer = false                                             # 是否为分析器
+parallel_computing_method = "CPU"                               # 保留字段，该组件的实际计算方式
+
+[qam_modulate.input]
+
+# Key：底层运算库的名字，Value：前端显示的名字
+data_x = "Input signal x"
+data_x_index = 0                    # Input signal x在底层运算库中函数参数列表的位置，用于信号分发
+data_y = "Input signal y"
+data_y_index = 1                    # Input signal y在底层运算库中函数参数列表的位置，用于信号分发
+
+[[qam_modulate.parameters]]
+# 定义参数列表
+py_phot_name = "bits_per_symbol"    # 底层运算库函数参数名，计算引擎需要以此构建参数字典
+front_end_name= "Bits per symbol"   # 前端显示名称
+data_type = "int"                   # 该参数的数据类型，方便进行数据类型转换
+value = "1024"                      # 该参数的默认值
+unit = ""                           # 由前端选择的单位, 计算引擎需要以此设置新单位
+phot_unit = ""                      # 底层运算库的默认单位，计算引起需要以此设置旧单位
+
+
+[qam_modulate.output]
+# 与输入信号一样需要指明返回值的位置信息
+symbols_x = "Output symbols x"
+symbols_x_index = 0
+symbols_y = "Output symbols y"
+symbols_y_index = 1
+
+# 如果其他需求可以再加其他的内容
