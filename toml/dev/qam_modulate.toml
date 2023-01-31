@@ -1,0 +1,29 @@
+# 底层运算库的代码
+# symbols_x, symbols_y = phot.qam_modulate(data_x, data_y, bits_per_symbol) # QAM调制器
+
+[qam_modulate] # 函数在底层运算库的名字
+
+class = false                                                  # 意思是：这不是类，这是函数
+frontend_name = "QAM modulate"                                 # 前端的名字
+description = "Quadrature Amplitude Modulation (QAM) Modulate" # 描述信息
+is_analyzer = false                                            # 是否为分析器
+
+[qam_modulate.parameters] # 函数参数
+
+[qam_modulate.parameters.bits_per_symbol]
+frontend_name = "Bits per symbol" # 前端显示名称
+data_type = "int"                 # 该参数的数据类型，方便进行数据类型转换
+value = "6"                       # 该参数的默认值
+unit = ""                         # 由前端选择的单位, 计算引擎需要以此设置新单位，”“意思是没有单位
+phot_unit = ""                    # 底层运算库的默认单位，计算引擎需要以此设置旧单位
+
+[qam_modulate.input]
+
+# Key：底层运算库的名字，Value：前端显示的名字
+data_x = "Input signal x"
+data_y = "Input signal y"
+
+[qam_modulate.output]
+
+symbols_x = "Output symbols x"
+symbols_y = "Output symbols y"

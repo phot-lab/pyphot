@@ -6,13 +6,21 @@
 
 ```shell
 # 安装 PyPhot
-pip install phot
+pip3 install phot
 
 # 运行代码示例
 python3 example.py
 ```
 
-主目录下的 Python 文件 [example.py](example.py) 展示了如何使用我们的 API，请仔细阅读。
+主目录下的 Python 文件 [example.py](example.py) 展示了如何使用 PyPhot 的 API，请仔细阅读。
+
+## TOML 配置文件
+
+目前已给出发射端的 TOML 配置文件，以供计算引擎调用，都位于该 [目录](toml/dev) 下。发射端的调用顺序为：
+
+```
+gen_bits() -> qam_modulate() -> PulseShaper() -> PulseShaper.tx_shape() -> dac_noise() -> phase_noise() -> gaussian_noise()
+```
 
 ## 开发者文档
 

@@ -1,0 +1,50 @@
+# 底层运算库的代码
+# signal_x, signal_y = phot.phase_noise(signal_x, signal_y, sampling_rate / total_baud, linewidth_tx, total_baud) # 加入发射端激光器产生的相位噪声
+
+[phase_noise] # 函数在底层运算库的名字
+
+class = false                   # 意思是：这不是类，这是函数
+frontend_name = "Phase noise"   # 前端的名字
+description = "加入发射端激光器产生的相位噪声" # 描述信息
+is_analyzer = false             # 是否为分析器
+
+[phase_noise.parameters] # 函数参数
+
+[phase_noise.parameters.over_sampling_rate]
+frontend_name = "Over sampling rate" # 前端显示名称
+data_type = "int"                    # 该参数的数据类型，方便进行数据类型转换
+value = "2"                          # 该参数的默认值
+unit = ""                            # 由前端选择的单位, 计算引擎需要以此设置新单位，”“意思是没有单位
+phot_unit = ""                       # 底层运算库的默认单位，计算引擎需要以此设置旧单位
+
+[phase_noise.parameters.sampling_rate]
+frontend_name = "Sampling rate" # 前端显示名称
+data_type = "int"               # 该参数的数据类型，方便进行数据类型转换
+value = "40000000000"           # 该参数的默认值
+unit = ""                       # 由前端选择的单位, 计算引擎需要以此设置新单位，”“意思是没有单位
+phot_unit = ""                  # 底层运算库的默认单位，计算引擎需要以此设置旧单位
+
+[phase_noise.parameters.linewidth]
+frontend_name = "Linewidth" # 前端显示名称
+data_type = "int"           # 该参数的数据类型，方便进行数据类型转换
+value = "150000"            # 该参数的默认值
+unit = ""                   # 由前端选择的单位, 计算引擎需要以此设置新单位，”“意思是没有单位
+phot_unit = ""              # 底层运算库的默认单位，计算引擎需要以此设置旧单位
+
+[phase_noise.parameters.total_baud]
+frontend_name = "Total baud" # 前端显示名称
+data_type = "int"            # 该参数的数据类型，方便进行数据类型转换
+value = "20000000000"        # 该参数的默认值
+unit = ""                    # 由前端选择的单位, 计算引擎需要以此设置新单位，”“意思是没有单位
+phot_unit = ""               # 底层运算库的默认单位，计算引擎需要以此设置旧单位
+
+[phase_noise.input]
+
+# Key：底层运算库的名字，Value：前端显示的名字
+signal_x = "Input signal x"
+signal_y = "Input signal y"
+
+[phase_noise.output]
+
+signal_x = "Output signal x"
+signal_y = "Output signal y"

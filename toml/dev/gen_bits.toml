@@ -1,0 +1,24 @@
+# 底层运算库的代码
+# data_x, data_y = phot.gen_bits(num_symbols * bits_per_symbol)  # 生成两列随机二进制序列
+
+[gen_bits] # 函数在底层运算库的名字
+
+class = false                                   # 意思是：这不是类，这是函数
+frontend_name = "Random bits generator"         # 前端的名字
+description = "Used for generating random bits" # 描述信息
+is_analyzer = false                             # 是否为分析器
+
+[gen_bits.parameters] # 函数参数
+
+[gen_bits.parameters.length]
+
+frontend_name = "Length" # 前端显示名称
+data_type = "int"        # 该参数的数据类型，方便进行数据类型转换
+value = "393216"         # 该参数的默认值
+unit = ""                # 由前端选择的单位, 计算引擎需要以此设置新单位，”“意思是没有单位
+phot_unit = ""           # 底层运算库的默认单位，计算引擎需要以此设置旧单位
+
+[gen_bits.output]
+
+data_x = "Output data x"
+data_y = "Output data y"

@@ -1,0 +1,43 @@
+# 底层运算库的代码
+# signal_x, signal_y = phot.dac_noise(signal_x, signal_y, sampling_rate_awg, sampling_rate, dac_resolution_bits) # 加入AWG中DAC的量化噪声
+
+[dac_noise] # 函数在底层运算库的名字
+
+class = false                  # 意思是：这不是类，这是函数
+frontend_name = "DAC noise"    # 前端的名字
+description = "加入AWG中DAC的量化噪声" # 描述信息
+is_analyzer = false            # 是否为分析器
+
+[dac_noise.parameters] # 函数参数
+
+[dac_noise.parameters.sampling_rate_awg]
+frontend_name = "Sampling rate AWG" # 前端显示名称
+data_type = "int"                   # 该参数的数据类型，方便进行数据类型转换
+value = "96000000000"               # 该参数的默认值
+unit = ""                           # 由前端选择的单位, 计算引擎需要以此设置新单位，”“意思是没有单位
+phot_unit = ""                      # 底层运算库的默认单位，计算引擎需要以此设置旧单位
+
+[dac_noise.parameters.sampling_rate]
+frontend_name = "Sampling rate" # 前端显示名称
+data_type = "int"               # 该参数的数据类型，方便进行数据类型转换
+value = "40000000000"           # 该参数的默认值
+unit = ""                       # 由前端选择的单位, 计算引擎需要以此设置新单位，”“意思是没有单位
+phot_unit = ""                  # 底层运算库的默认单位，计算引擎需要以此设置旧单位
+
+[dac_noise.parameters.dac_resolution_bits]
+frontend_name = "DAC resolution bits" # 前端显示名称
+data_type = "int"                     # 该参数的数据类型，方便进行数据类型转换
+value = "8"                           # 该参数的默认值
+unit = ""                             # 由前端选择的单位, 计算引擎需要以此设置新单位，”“意思是没有单位
+phot_unit = ""                        # 底层运算库的默认单位，计算引擎需要以此设置旧单位
+
+[dac_noise.input]
+
+# Key：底层运算库的名字，Value：前端显示的名字
+signal_x = "Input signal x"
+signal_y = "Input signal y"
+
+[dac_noise.output]
+
+signal_x = "Output signal x"
+signal_y = "Output signal y"
