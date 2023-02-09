@@ -3,7 +3,7 @@
 
 [qam_modulate] # 函数在底层运算库的名字
 
-class = false                                                  # 意思是：这不是类，这是函数
+is_class = false                                               # 意思是：这不是类，这是函数
 frontend_name = "QAM modulate"                                 # 前端的名字
 description = "Quadrature Amplitude Modulation (QAM) Modulate" # 描述信息
 is_analyzer = false                                            # 是否为分析器
@@ -14,8 +14,8 @@ is_analyzer = false                                            # 是否为分析
 frontend_name = "Bits per symbol" # 前端显示名称
 data_type = "int"                 # 该参数的数据类型，方便进行数据类型转换
 value = "6"                       # 该参数的默认值
-unit = ""                         # 由前端选择的单位, 计算引擎需要以此设置新单位，”“意思是没有单位
-phot_unit = ""                    # 底层运算库的默认单位，计算引擎需要以此设置旧单位
+unit = ""                         # 底层运算库的默认单位，比如“m”，“km”
+unit_type = ""                    # 底层运算库的单位类型，比如“length”、“frequency”
 
 [qam_modulate.input]
 
