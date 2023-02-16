@@ -1,0 +1,47 @@
+[iq_freq_offset_and_compensation]
+
+is_class = false
+frontend_name = "IQ frequency offset and compensation"
+description = "IQ frequency offset and compensation for signal"
+is_analyzer = false
+
+[iq_freq_offset_and_compensation.parameters]
+
+[iq_freq_offset_and_compensation.parameters.sampling_rate]
+frontend_name = "Sampling rate"
+data_type = "float"
+value = "1024000000000"
+unit = "hz"
+unit_type = "frequency"
+
+[iq_freq_offset_and_compensation.parameters.beta2]
+frontend_name = "beta2"
+data_type = "float"
+value = "0.0000000000000000000000216676"
+unit = ""
+unit_type = ""
+
+[iq_freq_offset_and_compensation.parameters.span]
+frontend_name = "Simulation span"
+data_type = "int"
+value = "5"
+unit = ""
+unit_type = ""
+
+[iq_freq_offset_and_compensation.parameters.L]
+frontend_name = "Length"
+data_type = "int"
+value = "75"
+unit = "km"
+unit_type = "length"
+
+[iq_freq_offset_and_compensation.input]
+signal_x = "Input signal x"
+signal_y = "Input signal y"
+
+power_x = "Input power x"
+power_y = "Input power y"
+
+[iq_freq_offset_and_compensation.output]
+signal_x = "Output signal x"
+signal_y = "Output signal y"

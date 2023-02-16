@@ -27,6 +27,7 @@ def sync_frame(signal_x, signal_y, prev_signal_x, prev_signal_y, up_sampling_fac
     start_index_x_1 = fine_synchronize(
         signal_x[0 : 10000 * up_sampling_factor : up_sampling_factor].T, prev_signal_x[0:4000].T
     )
+    
     start_index_y_1 = fine_synchronize(
         signal_y[0 : 10000 * up_sampling_factor : up_sampling_factor].T, prev_signal_y[0:4000].T
     )

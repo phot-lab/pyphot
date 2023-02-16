@@ -16,7 +16,7 @@ python3 example.py
 
 ## TOML 配置文件
 
-目前已给出发射端的 TOML 配置文件，以供计算引擎调用，都位于该 [目录](toml/dev) 下。发射端的调用顺序为：
+目前已给出发射端的 TOML 配置文件，以供计算引擎调用，都位于 [toml](toml/) 目录下。发射端的调用顺序为：
 
 ```
 gen_bits() -> qam_modulate() -> PulseShaper() -> PulseShaper.tx_shape() -> dac_noise() -> phase_noise() -> gaussian_noise()

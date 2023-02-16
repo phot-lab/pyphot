@@ -1,0 +1,29 @@
+[bits_error_count]
+
+is_class = false
+frontend_name = "Bits error counter"
+description = "Count bits error for signal"
+is_analyzer = true
+
+[bits_error_count.parameters]
+
+[bits_error_count.parameters.bits_per_symbol]
+frontend_name = "bits per symbol"
+data_type = "int"
+value = "6"
+unit = ""
+unit_type = ""
+
+[bits_error_count.input]
+signal_x = "Input signal x"
+signal_y = "Input signal y"
+
+prev_symbols_x = "Previous input symbols x"
+prev_symbols_y = "Previous input symbols y"
+
+[bits_error_count.output]
+signal_x = "Output signal x"
+signal_y = "Output signal y"
+
+prev_symbols_x = "Previous output symbols x"
+prev_symbols_y = "Previous output symbols y"

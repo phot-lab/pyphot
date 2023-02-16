@@ -1,0 +1,72 @@
+[adaptive_equalize]
+
+is_class = false
+frontend_name = "Adaptive equalize"
+description = "自适应均衡"
+is_analyzer = false
+
+[adaptive_equalize.parameters]
+
+[adaptive_equalize.parameters.num_tap]
+frontend_name = "Number of tap"
+data_type = "int"
+value = "25"
+unit = ""
+unit_type = ""
+
+[adaptive_equalize.parameters.cma_convergence]
+frontend_name = "CMA convergence"
+data_type = "int"
+value = "30000"
+unit = ""
+unit_type = ""
+
+[adaptive_equalize.parameters.ref_power_cma]
+frontend_name = "reference power of CMA"
+data_type = "int"
+value = "2"
+unit = ""
+unit_type = ""
+
+[adaptive_equalize.parameters.step_size_cma]
+frontend_name = "step size of CMA"
+data_type = "float"
+value = "0.000000001"
+unit = ""
+unit_type = ""
+
+[adaptive_equalize.parameters.step_size_rde]
+frontend_name = "step size of RDE"
+data_type = "float"
+value = "0.000000001"
+unit = ""
+unit_type = ""
+
+[adaptive_equalize.parameters.up_sampling_factor]
+frontend_name = "up sampling factor"
+data_type = "int"
+value = "2"
+unit = ""
+unit_type = ""
+
+[adaptive_equalize.parameters.bits_per_symbol]
+frontend_name = "bits per symbol"
+data_type = "int"
+value = "6"
+unit = ""
+unit_type = ""
+
+[adaptive_equalize.parameters.total_baud]
+frontend_name = "total baud rate"
+data_type = "int"
+value = "20000000000"
+unit = ""
+unit_type = ""
+
+[adaptive_equalize.input]
+signal_x = "Input signal x"
+signal_y = "Input signal y"
+
+[adaptive_equalize.output]
+signal_x = "Output signal x"
+signal_y = "Output signal y"

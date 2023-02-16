@@ -1,0 +1,30 @@
+[add_freq_offset]
+
+is_class = false
+frontend_name = "Add frequency offset"
+description = "Add frequency offset to signal"
+is_analyzer = false
+
+[add_freq_offset.parameters]
+
+[add_freq_offset.parameters.frequency_offset]
+frontend_name = "Frequency offset"
+data_type = "float"
+value = "2000000000"
+unit = ""
+unit_type = ""
+
+[add_freq_offset.parameters.sampling_rate]
+frontend_name = "Sampling rate"
+data_type = "float"
+value = "1024000000000"
+unit = "hz"
+unit_type = "frequency"
+
+[add_freq_offset.input]
+signal_x = "Input signal x"
+signal_y = "Input signal y"
+
+[add_freq_offset.output]
+signal_x = "Output signal x"
+signal_y = "Output signal y"

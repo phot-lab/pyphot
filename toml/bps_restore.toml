@@ -1,0 +1,37 @@
+[bps_restore]
+
+is_class = false
+frontend_name = "BPS restore"
+description = "BPS restore"
+is_analyzer = false
+
+[bps_restore.parameters]
+
+[bps_restore.parameters.num_test_angle]
+frontend_name = "number of test angles"
+data_type = "int"
+value = "64"
+unit = ""
+unit_type = ""
+
+[bps_restore.parameters.block_size]
+frontend_name = "block size"
+data_type = "int"
+value = "100"
+unit = ""
+unit_type = ""
+
+[bps_restore.parameters.bits_per_symbol]
+frontend_name = "bits per symbol"
+data_type = "int"
+value = "6"
+unit = ""
+unit_type = ""
+
+[bps_restore.input]
+signal_x = "Input signal x"
+signal_y = "Input signal y"
+
+[bps_restore.output]
+signal_x = "Output signal x"
+signal_y = "Output signal y"

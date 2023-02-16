@@ -1,0 +1,37 @@
+[add_adc_noise]
+
+is_class = false
+frontend_name = "Add ADC noise"
+description = "Add ADC noise to signal"
+is_analyzer = false
+
+[add_adc_noise.parameters]
+
+[add_adc_noise.parameters.sampling_rate]
+frontend_name = "Sampling rate"
+data_type = "int"
+value = "1024000000000"
+unit = "hz"
+unit_type = "frequency"
+
+[add_adc_noise.parameters.adc_sample_rate]
+frontend_name = "Frequency offset"
+data_type = "int"
+value = "160000000000"
+unit = "hz"
+unit_type = "frequency"
+
+[add_adc_noise.parameters.adc_resolution_bits]
+frontend_name = "Frequency offset"
+data_type = "int"
+value = "8"
+unit = ""
+unit_type = ""
+
+[add_adc_noise.input]
+signal_x = "Input signal x"
+signal_y = "Input signal y"
+
+[add_adc_noise.output]
+signal_x = "Output signal x"
+signal_y = "Output signal y"

@@ -1,0 +1,15 @@
+[add_iq_imbalance]
+
+is_class = false
+frontend_name = "Add frequency IQ imbalance"
+description = "Add frequency IQ imbalance to signal"
+is_analyzer = false
+
+
+[add_iq_imbalance.input]
+signal_x = "Input signal x"
+signal_y = "Input signal y"
+
+[add_iq_imbalance.output]
+signal_x = "Output signal x"
+signal_y = "Output signal y"

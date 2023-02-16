@@ -1,0 +1,74 @@
+[optical_fiber_channel]
+
+is_class = false
+frontend_name = "Optical fiber"
+description = "Single core single mode dual polarization fiber"
+is_analyzer = false
+
+[optical_fiber_channel.parameters]
+
+[optical_fiber_channel.parameters.sampling_rate]
+frontend_name = "Sampling rate"
+data_type = "float"
+value = "1024000000000"
+unit = "hz"
+unit_type = "frequency"
+
+[optical_fiber_channel.parameters.span]
+frontend_name = "Simulation span"
+data_type = "int"
+value = "5"
+unit = ""
+unit_type = ""
+
+[optical_fiber_channel.parameters.num_steps]
+frontend_name = "Number of step per length"
+data_type = "int"
+value = "75"
+unit = ""
+unit_type = ""
+
+[optical_fiber_channel.parameters.beta2]
+frontend_name = "beta2"
+data_type = "float"
+value = "0.0000000000000000000000216676"
+unit = ""
+unit_type = ""
+
+[optical_fiber_channel.parameters.delta_z]
+frontend_name = "Length per step"
+data_type = "float"
+value = "1"
+unit = ""
+unit_type = ""
+
+[optical_fiber_channel.parameters.gamma]
+frontend_name = "gamma"
+data_type = "float"
+value = "1.3"
+unit = ""
+unit_type = ""
+
+[optical_fiber_channel.parameters.alpha]
+frontend_name = "alpha"
+data_type = "float"
+value = "0.2"
+unit = ""
+unit_type = ""
+
+[optical_fiber_channel.parameters.L]
+frontend_name = "Length"
+data_type = "int"
+value = "75"
+unit = "km"
+unit_type = "length"
+
+[optical_fiber_channel.input]
+tx_signal_x = "Transmitting terminal(TX modules) signal x"
+tx_signal_y = "Transmitting terminal(TX modules) signal y"
+
+[optical_fiber_channel.output]
+signal_x = "Output signal x"
+signal_y = "Output signal y"
+power_x = "Output power x"
+power_y = "Output power y"

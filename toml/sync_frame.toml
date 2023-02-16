@@ -1,0 +1,29 @@
+[sync_frame]
+
+is_class = false
+frontend_name = "Synchronize frame"
+description = "Synchronize frame for signal"
+is_analyzer = false
+
+[sync_frame.parameters]
+
+[sync_frame.parameters.up_sampling_factor]
+frontend_name = "up sampling factor"
+data_type = "int"
+value = "2"
+unit = ""
+unit_type = ""
+
+[sync_frame.input]
+signal_x = "Input signal x"
+signal_y = "Input signal y"
+
+prev_symbols_x = "Input previous symbols x"
+prev_symbols_y = "Input previous symbols y"
+
+[sync_frame.output]
+signal_x = "Output signal x"
+signal_y = "Output signal y"
+
+prev_symbols_x = "Output previous symbols x"
+prev_symbols_y = "Output previous symbols y"
