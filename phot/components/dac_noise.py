@@ -20,23 +20,22 @@ from ..optical import dac_resolution
 import numpy as np
 
 
-def _dac_noise(signal, sampling_rate_awg, sampling_rate, dac_resolution_bits):
-    # 重采样信号采样率为DAC的采样率，模拟进入DAC
-    signal = resample_poly(signal, int(sampling_rate_awg), int(sampling_rate))
+def dac_noise(signals, sampling_rate_awg, sampling_rate, dac_resolution_bits):
 
-    # 对信号进行量化，模拟加入量化噪声
-    signal = dac_resolution(signal, dac_resolution_bits)
+    return_signals = []
+    for signal in signals:
+        # 重采样信号采样率为DAC的采样率，模拟进入DAC
+        signal = resample_poly(signal, int(sampling_rate_awg), int(sampling_rate))
 
-    # 减去信号量化后的直流，也就是均值
-    signal = signal - np.mean(signal)
+        # 对信号进行量化，模拟加入量化噪声
+        signal = dac_resolution(signal, dac_resolution_bits)
 
-    # 重采样信号采样率为原来的采样率，模拟出DAC后采样率，resample_poly 为SciPy库的函数
-    signal = resample_poly(signal, int(sampling_rate), int(sampling_rate_awg)).reshape((-1, 1))
+        # 减去信号量化后的直流，也就是均值
+        signal = signal - np.mean(signal)
 
-    return signal
+        # 重采样信号采样率为原来的采样率，模拟出DAC后采样率，resample_poly 为SciPy库的函数
+        signal = resample_poly(signal, int(sampling_rate), int(sampling_rate_awg)).reshape((-1, 1))
 
+        return_signals.append(signal)
 
-def dac_noise(signal_x, signal_y, sampling_rate_awg, sampling_rate, dac_resolution_bits):
-    return _dac_noise(signal_x, sampling_rate_awg, sampling_rate, dac_resolution_bits), _dac_noise(
-        signal_y, sampling_rate_awg, sampling_rate, dac_resolution_bits
-    )
+    return return_signals

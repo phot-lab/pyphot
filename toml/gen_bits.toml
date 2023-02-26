@@ -20,5 +20,4 @@ unit_type = ""                   # 底层运算库的单位类型，比如“len
 
 [gen_bits.output]
 
-data_x = "Output data x"
-data_y = "Output data y"
+bits = "Output bits sequence"

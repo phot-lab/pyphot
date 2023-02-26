@@ -15,15 +15,11 @@ unit = ""
 unit_type = ""
 
 [bits_error_count.input]
-signal_x = "Input signal x"
-signal_y = "Input signal y"
+signals = "Input signals"
 
-prev_symbols_x = "Previous input symbols x"
-prev_symbols_y = "Previous input symbols y"
+prev_symbols = "Previous input symbolss"
 
 [bits_error_count.output]
-signal_x = "Output signal x"
-signal_y = "Output signal y"
+signals = "Output signals"
 
-prev_symbols_x = "Previous output symbols x"
-prev_symbols_y = "Previous output symbols y"
+prev_symbols = "Previous output symbolss"

@@ -36,12 +36,9 @@ unit = "km"
 unit_type = "length"
 
 [iq_freq_offset_and_compensation.input]
-signal_x = "Input signal x"
-signal_y = "Input signal y"
+signals = "Input signals"
 
-power_x = "Input power x"
-power_y = "Input power y"
+signals_power = "Input signals power"
 
 [iq_freq_offset_and_compensation.output]
-signal_x = "Output signal x"
-signal_y = "Output signal y"
+signals = "Output signals"

@@ -19,7 +19,10 @@ from ..optical import load_awgn
 import numpy as np
 
 
-def gaussian_noise(signal_x, signal_y, osnr, sampling_rate):
+def gaussian_noise(signals, osnr, sampling_rate):
+    signal_x = signals[0]
+    signal_y = signals[1]
+
     # 生成均值为0，方差为1的随机噪声,此处直接产生两个偏振的噪声
     noise_x, noise_y, noise_power = load_awgn(len(signal_x))
 
@@ -39,4 +42,4 @@ def gaussian_noise(signal_x, signal_y, osnr, sampling_rate):
     signal_x = noise_x + signal_x
     signal_y = noise_y + signal_y
 
-    return signal_x, signal_y
+    return [signal_x, signal_y]

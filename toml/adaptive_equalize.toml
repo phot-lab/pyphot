@@ -64,9 +64,7 @@ unit = ""
 unit_type = ""
 
 [adaptive_equalize.input]
-signal_x = "Input signal x"
-signal_y = "Input signal y"
+signals = "Input signals"
 
 [adaptive_equalize.output]
-signal_x = "Output signal x"
-signal_y = "Output signal y"
+signals = "Output signals"

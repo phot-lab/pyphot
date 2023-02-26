@@ -29,6 +29,7 @@ def gen_bits(num_bits):
     Returns:
 
     """
-    data_x = np.random.randint(0, 2, (num_bits, 1))  # 采用randint函数随机产生0 1码元序列x
-    data_y = np.random.randint(0, 2, (num_bits, 1))  # 采用randint函数随机产生0 1码元序列x
-    return data_x, data_y
+    bits_x = np.random.randint(0, 2, (num_bits, 1))  # 采用randint函数随机产生0 1码元序列x
+    bits_y = np.random.randint(0, 2, (num_bits, 1))  # 采用randint函数随机产生0 1码元序列x
+
+    return [bits_x, bits_y]

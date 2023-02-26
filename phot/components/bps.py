@@ -20,7 +20,10 @@ from ..utils import plot_scatter
 import numpy as np
 
 
-def bps_restore(signal_x, signal_y, num_test_angle, block_size, bits_per_symbol):
+def bps_restore(signals, num_test_angle, block_size, bits_per_symbol):
+    signal_x = signals[0]
+    signal_y = signals[1]
+
     # BPS算法
     equalization_matrix_x, phase_x = bps_hybrid_qam(
         np.real(signal_x), np.imag(signal_x), num_test_angle, block_size, bits_per_symbol
@@ -44,4 +47,4 @@ def bps_restore(signal_x, signal_y, num_test_angle, block_size, bits_per_symbol)
 
     plot_scatter(equalization_matrix_x)
 
-    return equalization_matrix_x, equalization_matrix_y
+    return [equalization_matrix_x, equalization_matrix_y]

@@ -64,11 +64,9 @@ unit = "km"
 unit_type = "length"
 
 [optical_fiber_channel.input]
-tx_signal_x = "Transmitting terminal(TX modules) signal x"
-tx_signal_y = "Transmitting terminal(TX modules) signal y"
+signals = "Tx (transmit) signals"
 
 [optical_fiber_channel.output]
-signal_x = "Output signal x"
-signal_y = "Output signal y"
-power_x = "Output power x"
-power_y = "Output power y"
+signals = "Output signals"
+
+signals_power = "Output signals power"

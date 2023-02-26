@@ -24,4 +24,4 @@ from .adaptive_equalizer import adaptive_equalize
 from .bps import bps_restore
 from .ber import bits_error_count
 from .modem import qam_modulate
-from .rx_simple import add_freq_offset, add_iq_imbalance, add_adc_noise, iq_freq_offset_and_compensation
+from .rx_simple import add_freq_offset, add_iq_imbalance, adc_noise, iq_freq_offset_and_compensation

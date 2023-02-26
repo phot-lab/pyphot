@@ -22,8 +22,7 @@ from phot import logger
 
 
 def adaptive_equalize(
-    signal_x,
-    signal_y,
+    signals,
     num_tap,
     cma_convergence,
     ref_power_cma,
@@ -33,6 +32,8 @@ def adaptive_equalize(
     bits_per_symbol,
     total_baud,
 ):
+    signal_x = signals[0]
+    signal_y = signals[1]
     input_x_i = np.real(signal_x)  # 求出接收端X偏振的实部信号
     input_x_q = np.imag(signal_x)  # 求出接收端X偏振的虚部信号
     input_y_i = np.real(signal_y)  # 求出接收端Y偏振的实部信号
@@ -64,4 +65,4 @@ def adaptive_equalize(
     )
     logger.info("Estimated Accurate Frequency offset: {}".format(fre_offset))
 
-    return equalization_matrix_x, equalization_matrix_y
+    return [equalization_matrix_x, equalization_matrix_y]

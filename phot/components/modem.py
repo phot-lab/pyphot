@@ -18,7 +18,7 @@ Supported by: National Key Research and Development Program of China
 from commpy.modulation import QAMModem
 
 
-def qam_modulate(data_x, data_y, bits_per_symbol):
+def qam_modulate(bits, bits_per_symbol):
     """QAM modulate
 
     Args:
@@ -27,6 +27,8 @@ def qam_modulate(data_x, data_y, bits_per_symbol):
         bits_per_symbol (int/float): Bits per symbol
     """
     modem = QAMModem(2**bits_per_symbol)
-    symbols_x = modem.modulate(data_x).reshape((-1, 1))  # X偏振信号
-    symbols_y = modem.modulate(data_y).reshape((-1, 1))  # Y偏振信号
-    return symbols_x, symbols_y
+    symbols = []
+    for sequence in bits:
+        symbols_sequence = modem.modulate(sequence).reshape((-1, 1))  # 调制一列偏振信号
+        symbols.append(symbols_sequence)
+    return symbols

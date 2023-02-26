@@ -3,8 +3,7 @@ from numpy.fft import fftshift, fft, ifft, ifftshift
 
 
 def optical_fiber_channel(
-    tx_signal_x: np.ndarray,
-    tx_signal_y: np.ndarray,
+    signals,
     sampling_rate: float,
     span,
     num_steps,
@@ -31,8 +30,8 @@ def optical_fiber_channel(
     """
     # step-1: Digital Backpropagation
 
-    data_x = tx_signal_x
-    data_y = tx_signal_y
+    data_x = signals[0]
+    data_y = signals[1]
 
     data_x_normal = data_x / np.sqrt(np.mean(abs(data_x) ** 2))
     data_y_normal = data_y / np.sqrt(np.mean(abs(data_y) ** 2))
@@ -110,4 +109,4 @@ def optical_fiber_channel(
     tx_signal_x = ifft(ifftshift(data_fft_x, axes=0), axis=0) * np.size(data_fft_x)
     tx_signal_y = ifft(ifftshift(data_fft_y, axes=0), axis=0) * np.size(data_fft_y)
 
-    return tx_signal_x, tx_signal_y, power_temp_x, power_temp_y
+    return [tx_signal_x, tx_signal_y], [power_temp_x, power_temp_y]

@@ -27,10 +27,8 @@ unit_type = "frequency"         # 底层运算库的单位类型，比如“leng
 [gaussian_noise.input]
 
 # Key：底层运算库的名字，Value：前端显示的名字
-signal_x = "Input signal x"
-signal_y = "Input signal y"
+signals = "Input signals"
 
 [gaussian_noise.output]
 
-signal_x = "Output signal x"
-signal_y = "Output signal y"
+signals = "Output signals"

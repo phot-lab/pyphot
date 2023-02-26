@@ -29,9 +29,7 @@ unit = ""
 unit_type = ""
 
 [bps_restore.input]
-signal_x = "Input signal x"
-signal_y = "Input signal y"
+signals = "Input signals"
 
 [bps_restore.output]
-signal_x = "Output signal x"
-signal_y = "Output signal y"
+signals = "Output signals"

@@ -22,9 +22,7 @@ unit = "hz"
 unit_type = "frequency"
 
 [add_freq_offset.input]
-signal_x = "Input signal x"
-signal_y = "Input signal y"
+signals = "Input signals"
 
 [add_freq_offset.output]
-signal_x = "Output signal x"
-signal_y = "Output signal y"
+signals = "Output signals"

@@ -29,9 +29,7 @@ unit = ""
 unit_type = ""
 
 [add_adc_noise.input]
-signal_x = "Input signal x"
-signal_y = "Input signal y"
+signals = "Input signals"
 
 [add_adc_noise.output]
-signal_x = "Output signal x"
-signal_y = "Output signal y"
+signals = "Output signals"

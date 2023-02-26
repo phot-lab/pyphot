@@ -20,16 +20,22 @@ import numpy as np
 from phot import logger
 
 
-def sync_frame(signal_x, signal_y, prev_signal_x, prev_signal_y, up_sampling_factor):
+def sync_frame(signals, prev_symbols, up_sampling_factor):
     """帧同步，寻找与发射端原始信号头部对应的符号"""
+
+    signal_x = signals[0]
+    signal_y = signals[1]
+
+    prev_symbols_x = prev_symbols[0]
+    prev_symbols_y = prev_symbols[1]
 
     # 对信号进行帧同步，找出接收信号与发射信号对准的开头
     start_index_x_1 = fine_synchronize(
-        signal_x[0 : 10000 * up_sampling_factor : up_sampling_factor].T, prev_signal_x[0:4000].T
+        signal_x[0 : 10000 * up_sampling_factor : up_sampling_factor].T, prev_symbols_x[0:4000].T
     )
-    
+
     start_index_y_1 = fine_synchronize(
-        signal_y[0 : 10000 * up_sampling_factor : up_sampling_factor].T, prev_signal_y[0:4000].T
+        signal_y[0 : 10000 * up_sampling_factor : up_sampling_factor].T, prev_symbols_y[0:4000].T
     )
 
     logger.info("两个偏振第一次对准的帧头")
@@ -44,7 +50,7 @@ def sync_frame(signal_x, signal_y, prev_signal_x, prev_signal_y, up_sampling_fac
     signal_y = signal_y[:-1000]
 
     # 调整发射端信号与接收端信号的长度
-    prev_signal_x = prev_signal_x[0 : int(np.floor(len(signal_x) / up_sampling_factor))]
-    prev_signal_y = prev_signal_y[0 : int(np.floor(len(signal_y) / up_sampling_factor))]
+    prev_symbols_x = prev_symbols_x[0 : int(np.floor(len(signal_x) / up_sampling_factor))]
+    prev_symbols_y = prev_symbols_y[0 : int(np.floor(len(signal_y) / up_sampling_factor))]
 
-    return signal_x, signal_y, prev_signal_x, prev_signal_y
+    return [signal_x, signal_y], [prev_symbols_x, prev_symbols_y]

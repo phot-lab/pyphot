@@ -35,24 +35,20 @@ unit_type = ""                         # 底层运算库的单位类型，比如
 [PulseShaper.methods.tx_shape.input]
 
 # Key：底层运算库的名字，Value：前端显示的名字
-symbols_x = "Symbols x"
-symbols_y = "Symbols y"
+symbols = "Symbols"
 
 [PulseShaper.methods.tx_shape.output]
 
 # Key：底层运算库的名字，Value：前端显示的名字
-signal_x = "Signal x"
-signal_y = "Signal y"
+signals = "Signals"
 
 # 第二个成员方法
 [PulseShaper.methods.rx_shape.input]
 
 # Key：底层运算库的名字，Value：前端显示的名字
-signal_x = "Signal x"
-signal_y = "Signal y"
+signals = "Signals"
 
 [PulseShaper.methods.rx_shape.output]
 
 # Key：底层运算库的名字，Value：前端显示的名字
-signal_x = "Signal x"
-signal_y = "Signal y"
+signals = "Signals"

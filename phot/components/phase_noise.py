@@ -19,10 +19,12 @@ import numpy as np
 from ..optical import linewidth_induced_noise
 
 
-def phase_noise(signal_x, signal_y, over_sampling_rate, linewidth, symbol_rate):
-    phase_noise = linewidth_induced_noise(len(signal_x), over_sampling_rate, linewidth, symbol_rate)
+def phase_noise(signals, over_sampling_rate, linewidth, symbol_rate):
+    phase_noise = linewidth_induced_noise(len(signals[0]), over_sampling_rate, linewidth, symbol_rate)
 
     # 添加相位噪声
-    signal_x = signal_x * np.exp(1j * phase_noise)
-    signal_y = signal_y * np.exp(1j * phase_noise)
-    return signal_x, signal_y
+    return_signals = []
+    for signal in signals:
+        signal = signal * np.exp(1j * phase_noise)
+        return_signals.append(signal)
+    return return_signals

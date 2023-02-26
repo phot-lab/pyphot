@@ -20,10 +20,8 @@ unit_type = ""                    # 底层运算库的单位类型，比如“le
 [qam_modulate.input]
 
 # Key：底层运算库的名字，Value：前端显示的名字
-data_x = "Input signal x"
-data_y = "Input signal y"
+bits = "Input bits sequence"
 
 [qam_modulate.output]
 
-symbols_x = "Output symbols x"
-symbols_y = "Output symbols y"
+symbols = "Output symbols"
