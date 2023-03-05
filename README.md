@@ -5,11 +5,11 @@
 ## 运行代码
 
 ```shell
-# 安装 PyPhot
-pip3 install phot
+# 安装相关依赖
+pip install -r requirements.txt
 
 # 运行代码示例
-python3 example.py
+python example.py
 ```
 
 主目录下的 Python 文件 [example.py](example.py) 展示了如何使用 PyPhot 的 API，请仔细阅读。
