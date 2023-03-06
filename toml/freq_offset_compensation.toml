@@ -1,0 +1,21 @@
+[freq_offset_compensation]
+
+is_class = false
+frontend_name = "IQ frequency offset and compensation"
+description = "IQ frequency offset and compensation for signal"
+is_analyzer = false
+
+[freq_offset_compensation.parameters]
+
+[freq_offset_compensation.parameters.sampling_rate]
+frontend_name = "Sampling rate"
+data_type = "float"
+value = "1024000000000"
+unit = "hz"
+unit_type = "frequency"
+
+[freq_offset_compensation.input]
+signals = "Input signals"
+
+[freq_offset_compensation.output]
+signals = "Output signals"

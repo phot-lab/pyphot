@@ -16,7 +16,7 @@ Supported by: National Key Research and Development Program of China
 """
 
 import numpy as np
-from ..optical import cma_rde, fre_offset_compensation_fft
+from ..optical import cma_rde
 from ..utils import plot_scatter
 from phot import logger
 
@@ -56,13 +56,5 @@ def adaptive_equalize(
     plot_scatter(equalization_matrix_x, pt_size=1)
 
     # 此处均衡器内部存在一个下采样，因此均衡器出来后信号回到一个符号一个样本的采样率，也就是现在的采样率等于符号率
-
-    """ 均衡后进行精确的频偏估计和补偿 采用FFT-FOE算法，与前面的粗估计一样，防止前面粗估计没补偿完全，此处做一个补充 """
-
-    # 利用FFT-FOE算法对信号的频偏进行估计与补偿
-    equalization_matrix_x, equalization_matrix_y, fre_offset = fre_offset_compensation_fft(
-        equalization_matrix_x, equalization_matrix_y, total_baud
-    )
-    logger.info("Estimated Accurate Frequency offset: {}".format(fre_offset))
 
     return [equalization_matrix_x, equalization_matrix_y]

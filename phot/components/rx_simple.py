@@ -17,7 +17,7 @@ Supported by: National Key Research and Development Program of China
 
 import numpy as np
 from scipy.signal import resample_poly
-from ..optical import adc_resolution, gram_schmidt_orthogonalize, fre_offset_compensation_fft, cdc
+from ..optical import adc_resolution, gram_schmidt_orthogonalize, cdc
 from phot import logger
 
 
@@ -85,7 +85,7 @@ def adc_noise(signals, sampling_rate, adc_sample_rate, adc_resolution_bits):
     return return_signals
 
 
-def iq_freq_offset_and_compensation(signals, signals_power, sampling_rate, beta2, span, L):
+def iq_compensation(signals, signals_power, sampling_rate, beta2, span, L):
     """IQ正交化补偿，就是将之前的I/Q失衡的损伤补偿回来"""
 
     signal_x = signals[0]
@@ -100,10 +100,4 @@ def iq_freq_offset_and_compensation(signals, signals_power, sampling_rate, beta2
     re_y = rx_yi_tem + 1j * rx_yq_tem
 
     re_x, re_y = cdc(re_x, re_y, signals_power[0], signals_power[1], sampling_rate, beta2, span, L)
-
-    """ 粗糙的频偏估计和补偿，先进行一个频偏的补偿，因为后面有一个帧同步，而帧同步之前需要先对频偏进行补偿，否则帧同步不正确 """
-
-    # 利用FFT-FOE算法对信号的频偏进行估计与补偿
-    re_x, re_y, fre_offset = fre_offset_compensation_fft(re_x, re_y, sampling_rate)
-    logger.info("Estimated Coarse Frequency offset: {}".format(fre_offset))
     return [re_x, re_y]

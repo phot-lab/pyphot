@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
     """ 根据设置的OSNR来加入高斯白噪声 """
 
-    osnr_db = 50  # 设置系统OSNR，也就是光信号功率与噪声功率的比值，此处单位为dB
+    osnr_db = 30  # 设置系统OSNR，也就是光信号功率与噪声功率的比值，此处单位为dB
     signals = phot.gaussian_noise(signals, osnr_db, sampling_rate)
 
     """ 发射端代码此处截止 """
@@ -89,18 +89,16 @@ if __name__ == "__main__":
     signals = phot.adc_noise(signals, sampling_rate, adc_sample_rate, adc_resolution_bits)
 
     """ IQ正交化补偿，就是将之前的I/Q失衡的损伤补偿回来 """
+    signals = phot.iq_compensation(signals, signals_power, sampling_rate, beta2, span, L)
 
-    signals = phot.iq_freq_offset_and_compensation(
-        signals, signals_power, sampling_rate, beta2, span, L
-    )
+    """ 粗糙的频偏估计和补偿，先进行一个频偏的补偿，因为后面有一个帧同步，而帧同步之前需要先对频偏进行补偿，否则帧同步不正确 """
+    signals = phot.freq_offset_compensation(signals, sampling_rate)
 
     """ 接收端相应的RRC脉冲整形，具体的参数代码与发射端的RRC滤波器是一致的 """
     signals = shaper.rx_shape(signals)
 
     """ 帧同步，寻找与发射端原始信号头部对应的符号 """
-    signals, prev_symbols = phot.sync_frame(
-        signals, prev_symbols, up_sampling_factor
-    )
+    signals, prev_symbols = phot.sync_frame(signals, prev_symbols, up_sampling_factor)
 
     """ 自适应均衡，此处采用恒模算法（CMA）对收敛系数进行预收敛，再拿收敛后的滤波器系数对正式的信号使用半径定向算法（RDE）进行均衡收敛，总的思想采用梯度下降法 """
 
@@ -121,6 +119,9 @@ if __name__ == "__main__":
         bits_per_symbol,
         total_baud,
     )
+
+    """ 均衡后进行精确的频偏估计和补偿 采用FFT-FOE算法，与前面的粗估计一样，防止前面粗估计没补偿完全，此处做一个补充 """
+    signals = phot.freq_offset_compensation(signals, total_baud)
 
     """ 相位恢复  采用盲相位搜索算法（BPS）进行相位估计和补偿 """
 
