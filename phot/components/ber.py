@@ -49,9 +49,11 @@ def bits_error_count(signals, prev_symbols, bits_per_symbol):
 
     """ BER COUNT  对信号进行误码率计算，将接收信号与发射信号转化为格雷编码，比较各个码元的正确率 """
 
-    ber, q_db = ber_estimate(prev_symbols_y, signal_y, bits_per_symbol)
-    logger.info("Estimated overall bits error is {:.5f}".format(ber))
-    logger.info("Estimated Q factor is {:.5f}".format(q_db))
+    ber, q_factor = ber_estimate(prev_symbols_y, signal_y, bits_per_symbol)
+    # logger.info("Estimated overall bits error is {:.5f}".format(ber))
+    # logger.info("Estimated Q factor is {:.5f}".format(q_factor))
+
+    return ber, q_factor
 
     # 下面是遗弃版本
     # modem = QAMModem(2**bits_per_symbol)

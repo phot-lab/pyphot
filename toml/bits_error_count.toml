@@ -20,6 +20,5 @@ signals = "Input signals"
 prev_symbols = "Previous input symbolss"
 
 [bits_error_count.output]
-signals = "Output signals"
-
-prev_symbols = "Previous output symbolss"
+ber = "Bits error rate"
+q_factor = "Q factor (db)"

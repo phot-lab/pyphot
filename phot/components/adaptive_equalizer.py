@@ -53,6 +53,7 @@ def adaptive_equalize(
         up_sampling_factor,
         bits_per_symbol,
     )
+
     plot_scatter(equalization_matrix_x, pt_size=1)
 
     # 此处均衡器内部存在一个下采样，因此均衡器出来后信号回到一个符号一个样本的采样率，也就是现在的采样率等于符号率

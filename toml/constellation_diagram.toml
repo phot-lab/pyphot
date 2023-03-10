@@ -1,0 +1,9 @@
+[constellation_diagram]
+
+is_class = false
+frontend_name = "Constellation diagram"
+description = "A function of analyzer, plot constellation diagram"
+is_analyzer = true
+
+[constellation_diagram.input]
+signals = "Input signals"

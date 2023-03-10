@@ -60,6 +60,6 @@ def ber_estimate(tx_scm_matrix, rx_scm_matrix, bits_per_symbol):
     # Estimate the BER value
     ber = error_sym / (2 * length_symbols) / (bits_per_symbol / 2)
     q = np.sqrt(2) * erfcinv(2 * ber)  # 利用公式利用BER计算出Q因子
-    q_db = 20 * np.log10(q)  # 调整单位为dB
+    q_factor = 20 * np.log10(q)  # 调整单位为dB
 
-    return ber, q_db
+    return ber, q_factor

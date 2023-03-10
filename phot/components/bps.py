@@ -16,7 +16,6 @@ Supported by: National Key Research and Development Program of China
 """
 
 from ..optical import bps_hybrid_qam
-from ..utils import plot_scatter
 import numpy as np
 
 
@@ -44,7 +43,5 @@ def bps_restore(signals, num_test_angle, block_size, bits_per_symbol):
     elif bits_per_symbol == 6:
         equalization_matrix_x = equalization_matrix_x * np.sqrt(42)
         equalization_matrix_y = equalization_matrix_y * np.sqrt(42)
-
-    plot_scatter(equalization_matrix_x)
 
     return [equalization_matrix_x, equalization_matrix_y]
