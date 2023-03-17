@@ -26,3 +26,4 @@ from .ber import bits_error_count
 from .modem import qam_modulate
 from .rx_simple import add_freq_offset, add_iq_imbalance, adc_noise, iq_compensation
 from .analyzer import constellation_diagram
+from .fiber import fiber

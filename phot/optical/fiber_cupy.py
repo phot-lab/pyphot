@@ -1,8 +1,9 @@
 import numpy as np
 from numpy.fft import fftshift, fft, ifft, ifftshift
+import time
 
 
-def optical_fiber_channel(
+def fiber_cupy(
     signals,
     sampling_rate: float,
     span,
@@ -30,8 +31,13 @@ def optical_fiber_channel(
     """
     # step-1: Digital Backpropagation
 
+    import cupy as cp
+
     data_x = signals[0]
     data_y = signals[1]
+
+    data_x = cp.asarray(data_x)
+    data_y = cp.asarray(data_y)
 
     data_x_normal = data_x / np.sqrt(np.mean(abs(data_x) ** 2))
     data_y_normal = data_y / np.sqrt(np.mean(abs(data_y) ** 2))
@@ -59,6 +65,7 @@ def optical_fiber_channel(
 
     omega = np.arange(-sampling_rate / 2, sampling_rate / 2, sampling_rate / data_length)
     omega = np.reshape(omega, (-1, 1))
+    omega = cp.asarray(omega)
 
     data_fft_x = fftshift(fft(data_x, axis=0), axes=0) / np.size(data_x)  # 将数据变到频率并将零值移到原点
     data_fft_y = fftshift(fft(data_y, axis=0), axes=0) / np.size(data_y)
@@ -108,5 +115,11 @@ def optical_fiber_channel(
 
     tx_signal_x = ifft(ifftshift(data_fft_x, axes=0), axis=0) * np.size(data_fft_x)
     tx_signal_y = ifft(ifftshift(data_fft_y, axes=0), axis=0) * np.size(data_fft_y)
+
+    tx_signal_x = cp.asnumpy(tx_signal_x)
+    tx_signal_y = cp.asnumpy(tx_signal_y)
+
+    power_temp_x = cp.asnumpy(power_temp_x)
+    power_temp_y = cp.asnumpy(power_temp_y)
 
     return [tx_signal_x, tx_signal_y], [power_temp_x, power_temp_y]

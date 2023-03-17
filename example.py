@@ -4,7 +4,7 @@ if __name__ == "__main__":
     """双偏振光收发模块 + 光纤信道"""
     """本代码为程序主函数 本代码主要适用于 QPSK，16QAM，32QAM，64QAM 调制格式的单载波相干背靠背（B2B）信号"""
 
-    # phot.config(plot=False)  # 全局关闭画图
+    phot.config(plot=True, backend="numpy")  # 全局开启画图，backend 使用 numpy
 
     # 设置全局系统仿真参数
     num_symbols = 2**16  # 符号数目
@@ -64,9 +64,7 @@ if __name__ == "__main__":
     beta2 = 21.6676e-24
     gamma = 1.3
 
-    signals, signals_power = phot.optical_fiber_channel(
-        signals, sampling_rate, span, num_steps, beta2, delta_z, gamma, alpha, L
-    )
+    signals, signals_power = phot.fiber(signals, sampling_rate, span, num_steps, beta2, delta_z, gamma, alpha, L)
 
     """ 添加接收端激光器产生的相位噪声 """
     linewidth_rx = 150e3  # 激光器线宽

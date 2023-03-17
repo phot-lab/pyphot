@@ -24,6 +24,8 @@ from .fine_sync import fine_synchronize
 from .cma_rde import cma_rde
 from .bps import bps_hybrid_qam
 from .bit_error import ber_count, ber_estimate
-from .fiber import optical_fiber_channel
+from .fiber_numpy import fiber_numpy
+from .fiber_cupy import fiber_cupy
+from .fiber_torch import fiber_torch
 from .dbp_compensate import dbp_compensate
 from .cdc import cdc
