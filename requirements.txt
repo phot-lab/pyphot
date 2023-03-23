@@ -4,3 +4,4 @@ numpy>=1.22.4
 scikit_commpy>=0.7.0
 scipy>=1.8.1
 torch>=1.10.1
+# 修改使用了 eyediagram 的代码

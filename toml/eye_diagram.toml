@@ -1,0 +1,16 @@
+[eye_diagram]
+
+is_class = false
+frontend_name = "Eye diagram"
+description = "A function of analyzer, plot eye diagram"
+is_analyzer = true
+
+[eye_diagram.input]
+signals = "Input signals"
+
+[eye_diagram.parameters.up_sampling_factor]
+frontend_name = "Up sampling factor" # 前端显示名称
+data_type = "int"                    # 该参数的数据类型，方便进行数据类型转换
+value = "2"                          # 该参数的默认值
+unit = ""                            # 底层运算库的默认单位，比如“m”，“km”
+unit_type = ""                       # 底层运算库的单位类型，比如“length”、“frequency”

@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
     # 设置全局系统仿真参数
     num_symbols = 2**16  # 符号数目
-    bits_per_symbol = 6  # 2 for QPSK;4 for 16QAM; 5 for 32QAM; 6 for 64QAM  设置调制格式
+    bits_per_symbol = 4  # 2 for QPSK;4 for 16QAM; 5 for 32QAM; 6 for 64QAM  设置调制格式
     total_baud = 10e9  # 信号波特率，符号率
     up_sampling_factor = 2  # 上采样倍数
     sampling_rate = up_sampling_factor * total_baud  # 信号采样率
@@ -127,6 +127,9 @@ if __name__ == "__main__":
     block_size = 100  # BPS算法的块长设置
 
     signals = phot.bps_restore(signals, num_test_angle, block_size, bits_per_symbol)
+
+    # 分析器画眼图
+    phot.eye_diagram(signals, up_sampling_factor)
 
     # 分析器画星座图
     phot.constellation_diagram(signals)

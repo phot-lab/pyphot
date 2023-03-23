@@ -57,6 +57,7 @@ def ber_estimate(tx_scm_matrix, rx_scm_matrix, bits_per_symbol):
             error_sym = error_sym + 1
         if delta_iq[sym_num][1] > 1:
             error_sym = error_sym + 1
+            
     # Estimate the BER value
     ber = error_sym / (2 * length_symbols) / (bits_per_symbol / 2)
     q = np.sqrt(2) * erfcinv(2 * ber)  # 利用公式利用BER计算出Q因子
