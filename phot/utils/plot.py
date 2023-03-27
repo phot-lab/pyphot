@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 from . import settings
 
 
-def plot_scatter(sig: np.ndarray, pt_size=5) -> None:
+def plot_scatter(sig: np.ndarray, pt_size=5, xlabel="Real", ylabel="Imag", title="Scatter diagram") -> None:
     if not settings._plot:
         return
     axis_x = np.real(sig).ravel()
@@ -28,9 +28,9 @@ def plot_scatter(sig: np.ndarray, pt_size=5) -> None:
     # plt.figure(figsize=(10, 10), layout='constrained')
     plt.figure(figsize=(10, 10))
     plt.scatter(axis_y, axis_x, s=pt_size)
-    plt.xlabel("Real")
-    plt.ylabel("Imag")
-    plt.title("Scatter Plot")
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.title(title)
     plt.grid()
     plt.show()
 

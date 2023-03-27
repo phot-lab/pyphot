@@ -128,11 +128,11 @@ if __name__ == "__main__":
 
     signals = phot.bps_restore(signals, num_test_angle, block_size, bits_per_symbol)
 
-    # 分析器画眼图
-    phot.eye_diagram(signals, up_sampling_factor)
-
     # 分析器画星座图
     phot.constellation_diagram(signals)
+
+    # 分析器画眼图
+    phot.eye_diagram(signals, up_sampling_factor)
 
     """ 此处开始计算误码率 """
 

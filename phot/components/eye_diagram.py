@@ -10,6 +10,9 @@ def eye_diagram(signals, up_sampling_factor):
 
     plt.ylim(-5, 5)
     plt.xlim(-8, 8)
+    plt.title("Eye diagram")
+    plt.xlabel("Time [ps]") # ps = 皮秒
+    plt.ylabel("Power Level [a.u.]") # a.u. = arbitrary units
     plt.show()
 
 
