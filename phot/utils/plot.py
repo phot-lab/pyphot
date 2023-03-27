@@ -33,6 +33,7 @@ def plot_scatter(sig: np.ndarray, pt_size=5, xlabel="Real", ylabel="Imag", title
     plt.title(title)
     plt.grid()
     plt.show()
+    plt.close()
 
 
 def plot_linechart(x, y, xlabel=None, ylabel=None, title=None):
@@ -45,3 +46,4 @@ def plot_linechart(x, y, xlabel=None, ylabel=None, title=None):
     plt.ylabel(ylabel)
     plt.title(title)
     plt.show()
+    plt.close()
