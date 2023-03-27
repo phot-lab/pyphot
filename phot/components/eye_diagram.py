@@ -9,6 +9,8 @@ def eye_diagram(signals, up_sampling_factor):
     if not settings._plot:
         return
 
+    plt.figure(figsize=(10, 10))
+
     _eye_diagram(np.real(signals[0][:8000].ravel()), up_sampling_factor * 2, cmap=plt.cm.coolwarm)
 
     plt.ylim(-5, 5)
@@ -17,7 +19,6 @@ def eye_diagram(signals, up_sampling_factor):
     plt.xlabel("Time [ps]")  # ps = 皮秒
     plt.ylabel("Power Level [a.u.]")  # a.u. = arbitrary units
     plt.show()
-    plt.close()
 
 
 def _eye_diagram(y, window_size, offset=0, colorbar=True, **imshowkwargs):
