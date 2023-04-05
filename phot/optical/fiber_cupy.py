@@ -1,18 +1,16 @@
 import numpy as np
 from numpy.fft import fftshift, fft, ifft, ifftshift
-import time
 
 
 def fiber_cupy(
     signals,
     sampling_rate: float,
-    span,
-    num_steps,
+    num_spans,
     beta2,
     delta_z,
     gamma,
     alpha,
-    L,
+    span_length,
 ):
     """
 
@@ -32,6 +30,8 @@ def fiber_cupy(
     # step-1: Digital Backpropagation
 
     import cupy as cp
+
+    num_steps_per_span = int(span_length / delta_z)
 
     data_x = signals[0]
     data_y = signals[1]
@@ -70,8 +70,8 @@ def fiber_cupy(
     data_fft_x = fftshift(fft(data_x, axis=0), axes=0) / np.size(data_x)  # 将数据变到频率并将零值移到原点
     data_fft_y = fftshift(fft(data_y, axis=0), axes=0) / np.size(data_y)
 
-    for i in range(span):
-        for j in range(num_steps):
+    for i in range(num_spans):
+        for j in range(num_steps_per_span):
             # 1/2 信号衰减
             data_fft_x = data_fft_x * np.exp(-alpha * (delta_z / 2))
             data_fft_y = data_fft_y * np.exp(-alpha * (delta_z / 2))
@@ -107,8 +107,8 @@ def fiber_cupy(
             data_fft_y = data_fft_y * np.exp(-alpha * (delta_z / 2))
 
         # == EDFA ==
-        data_fft_x = data_fft_x * np.exp(alpha * L)
-        data_fft_y = data_fft_y * np.exp(alpha * L)
+        data_fft_x = data_fft_x * np.exp(alpha * span_length)
+        data_fft_y = data_fft_y * np.exp(alpha * span_length)
 
     # step-2: Perturbation Theory
     # step-3: Neural Network

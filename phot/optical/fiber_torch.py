@@ -7,13 +7,12 @@ import math
 def fiber_torch(
     signals,
     sampling_rate: float,
-    span,
-    num_steps,
+    num_spans,
     beta2,
     delta_z,
     gamma,
     alpha,
-    L,
+    span_length,
 ):
     """
 
@@ -30,6 +29,9 @@ def fiber_torch(
     Returns:
 
     """
+
+    num_steps_per_span = int(span_length / delta_z)
+
     # step-1: Digital Backpropagation
     with torch.no_grad():
         data_x = signals[0]
@@ -40,7 +42,7 @@ def fiber_torch(
 
         data_x = torch.from_numpy(data_x)
         data_y = torch.from_numpy(data_y)
-        
+
         data_x = data_x.to("cuda")
         data_y = data_y.to("cuda")
 
@@ -75,8 +77,8 @@ def fiber_torch(
         data_fft_x = fftshift(fft(data_x, dim=0), dim=0) / x_length  # 将数据变到频率并将零值移到原点
         data_fft_y = fftshift(fft(data_y, dim=0), dim=0) / y_length
 
-        for i in range(span):
-            for j in range(num_steps):
+        for i in range(num_spans):
+            for j in range(num_steps_per_span):
                 # 1/2 信号衰减
                 data_fft_x = data_fft_x * math.exp(-alpha * (delta_z / 2))
                 data_fft_y = data_fft_y * math.exp(-alpha * (delta_z / 2))
@@ -116,8 +118,8 @@ def fiber_torch(
                 data_fft_y = data_fft_y * math.exp(-alpha * (delta_z / 2))
 
             # == EDFA ==
-            data_fft_x = data_fft_x * math.exp(alpha * L)
-            data_fft_y = data_fft_y * math.exp(alpha * L)
+            data_fft_x = data_fft_x * math.exp(alpha * span_length)
+            data_fft_y = data_fft_y * math.exp(alpha * span_length)
 
         # step-2: Perturbation Theory
         # step-3: Neural Network

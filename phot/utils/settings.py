@@ -2,7 +2,7 @@ _plot = True
 _backend = "numpy"
 
 
-def config(plot=True, backend="numpy"):
+def config(plot: bool = True, backend: str = "numpy"):
     """设置全局变量
 
     Args:

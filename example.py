@@ -4,7 +4,7 @@ if __name__ == "__main__":
     """双偏振光收发模块 + 光纤信道"""
     """本代码为程序主函数 本代码主要适用于 QPSK，16QAM，32QAM，64QAM 调制格式的单载波相干背靠背（B2B）信号"""
 
-    phot.config(plot=True, backend="numpy")  # 全局开启画图，backend 使用 numpy
+    phot.config(plot=False, backend="numpy")  # 全局开启画图，backend 使用 numpy
 
     # 设置全局系统仿真参数
     num_symbols = 2**16  # 符号数目
@@ -55,16 +55,15 @@ if __name__ == "__main__":
 
     """ Optical Fiber Channel """
 
-    # 1000公里 10米一步
-    span = 5  # 一个 span 代表多少 L
-    num_steps = 75  # 代表一个 L 多少步
-    L = 75  # 一个 L 代表多少 km
-    delta_z = L / num_steps  # 单步步长
+    # 实际情况：1000公里 10米一步
+    num_spans = 5  # 多少个 span (每个span经过一次放大器)
+    span_length = 75  # 一个 span 的长度 (km)
+    delta_z = 1  # 单步步长 (km)
     alpha = 0.2
     beta2 = 21.6676e-24
     gamma = 1.3
 
-    signals, signals_power = phot.fiber(signals, sampling_rate, span, num_steps, beta2, delta_z, gamma, alpha, L)
+    signals, signals_power = phot.fiber(signals, sampling_rate, num_spans, beta2, delta_z, gamma, alpha, span_length)
 
     """ 添加接收端激光器产生的相位噪声 """
     linewidth_rx = 150e3  # 激光器线宽
@@ -87,7 +86,7 @@ if __name__ == "__main__":
     signals = phot.adc_noise(signals, sampling_rate, adc_sample_rate, adc_resolution_bits)
 
     """ IQ正交化补偿，就是将之前的I/Q失衡的损伤补偿回来 """
-    signals = phot.iq_compensation(signals, signals_power, sampling_rate, beta2, span, L)
+    signals = phot.iq_compensation(signals, signals_power, sampling_rate, beta2, num_spans, span_length)
 
     """ 粗糙的频偏估计和补偿，先进行一个频偏的补偿，因为后面有一个帧同步，而帧同步之前需要先对频偏进行补偿，否则帧同步不正确 """
     signals = phot.freq_offset_compensation(signals, sampling_rate)

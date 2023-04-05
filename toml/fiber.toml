@@ -14,17 +14,10 @@ value = "1024000000000"
 unit = "hz"
 unit_type = "frequency"
 
-[fiber.parameters.span]
-frontend_name = "Simulation span"
+[fiber.parameters.num_spans]
+frontend_name = "Number of spans"
 data_type = "int"
 value = "5"
-unit = ""
-unit_type = ""
-
-[fiber.parameters.num_steps]
-frontend_name = "Number of step per length"
-data_type = "int"
-value = "75"
 unit = ""
 unit_type = ""
 
@@ -36,7 +29,7 @@ unit = ""
 unit_type = ""
 
 [fiber.parameters.delta_z]
-frontend_name = "Length per step"
+frontend_name = "Step length"
 data_type = "float"
 value = "1"
 unit = ""
@@ -56,8 +49,8 @@ value = "0.2"
 unit = ""
 unit_type = ""
 
-[fiber.parameters.L]
-frontend_name = "Length"
+[fiber.parameters.span_length]
+frontend_name = "Span length"
 data_type = "int"
 value = "75"
 unit = "km"
