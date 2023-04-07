@@ -1,10 +1,10 @@
-import utils
 import phot
 import time
+import pandas as pd
+from tabulate import tabulate
 
 
-def compute_signals():
-
+def transmit_end():
     # 设置全局系统仿真参数
     num_symbols = 2**16  # 符号数目
     bits_per_symbol = 4  # 2 for QPSK; 4 for 16QAM; 5 for 32QAM; 6 for 64QAM  设置调制格式
@@ -53,9 +53,9 @@ def compute_signals():
 
 
 if __name__ == "__main__":
-    phot.config(plot=False, backend="numpy")  # 全局开启画图，backend 使用 numpy
+    phot.config(plot=False, backend="cupy")  # 全局开启画图，backend 使用 numpy
 
-    signals, sampling_rate = compute_signals()
+    signals, sampling_rate = transmit_end()
 
     # 实际情况：1000公里 10米一步
     num_spans = 5  # 多少个 span (每个span经过一次放大器)
@@ -65,10 +65,17 @@ if __name__ == "__main__":
     beta2 = 21.6676e-24
     gamma = 1.3
 
-    spans = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
-    for span in spans:
+    # 先把 GPU 连接一下
+    phot.fiber(signals, sampling_rate, num_spans, beta2, delta_z, gamma, alpha, span_length)
+
+    delta_z_list = [1, 0.1, 0.01]
+    times = []
+    for delta_z in delta_z_list:
         start = time.time()
-        phot.fiber(signals, sampling_rate, num_spans, beta2, delta_z, gamma, alpha, span)
+        phot.fiber(signals, sampling_rate, num_spans, beta2, delta_z, gamma, alpha, span_length)
         duration = time.time() - start
-        print(f"Span: {span}")
-        print(f"Elapsed time: {duration} s")
+        times.append(f"{duration:.2f}")
+        print(f"Finished delta_z: {delta_z}, time: {duration:.2f} s")
+
+    df = pd.DataFrame({"单步步长": delta_z, "time (s)": times})
+    print(tabulate(df, tablefmt="github", headers="keys"))
