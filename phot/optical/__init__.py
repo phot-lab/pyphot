@@ -29,3 +29,4 @@ from .fiber_cupy import fiber_cupy
 from .fiber_torch import fiber_torch
 from .dbp_compensate import dbp_compensate
 from .cdc import cdc
+from .signal_power import signal_power

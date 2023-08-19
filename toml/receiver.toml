@@ -1,0 +1,142 @@
+[receiver]
+
+is_class = false
+frontend_name = "receiver"
+description = "接收机"
+is_analyzer = false
+
+[receiver.parameters]
+
+[receiver.parameters.bits_per_symbol]
+frontend_name = "bits per symbol"
+data_type = "int"
+value = "4"
+unit = ""
+unit_type = ""
+
+[receiver.parameters.total_baud]
+frontend_name = "total baud rate"
+data_type = "int"
+value = "10000000000"
+unit = ""
+unit_type = ""
+
+[receiver.parameters.up_sampling_factor]
+frontend_name = "up sampling factor"
+data_type = "int"
+value = "2"
+unit = ""
+unit_type = ""
+
+[receiver.parameters.RRC_ROLL_OFF]
+frontend_name = "RRC pulse shaping roll-off factor"
+data_type = "float"
+value = "0.02"
+unit = ""
+unit_type = ""
+
+[receiver.parameters.num_spans]
+frontend_name = "Number of spans"
+data_type = "int"
+value = "5"
+unit = ""
+unit_type = ""
+
+[receiver.parameters.beta2]
+frontend_name = "beta2"
+data_type = "float"
+value = "0.0000000000000000000000216676"
+unit = ""
+unit_type = ""
+
+[receiver.parameters.span_length]
+frontend_name = "Span length"
+data_type = "int"
+value = "75"
+unit = "km"
+unit_type = "length"
+
+[receiver.parameters.linewidth_rx]
+frontend_name = "Receiver laser width"
+data_type = "int"
+value = "150000"
+unit = ""
+unit_type = ""
+
+[receiver.parameters.frequency_offset]
+frontend_name = "Frequency offset"
+data_type = "float"
+value = "2000000000"
+unit = ""
+unit_type = ""
+
+[receiver.parameters.adc_sample_rate]
+frontend_name = "ADC sample rate"
+data_type = "int"
+value = "160000000000"
+unit = "hz"
+unit_type = "frequency"
+
+[receiver.parameters.adc_resolution_bits]
+frontend_name = "ADC resolution bits"
+data_type = "int"
+value = "8"
+unit = ""
+unit_type = ""
+
+[receiver.parameters.num_tap]
+frontend_name = "Number of tap"
+data_type = "int"
+value = "25"
+unit = ""
+unit_type = ""
+
+[receiver.parameters.ref_power_cma]
+frontend_name = "reference power of CMA"
+data_type = "int"
+value = "2"
+unit = ""
+unit_type = ""
+
+[receiver.parameters.cma_convergence]
+frontend_name = "CMA convergence"
+data_type = "int"
+value = "30000"
+unit = ""
+unit_type = ""
+
+[receiver.parameters.step_size_cma]
+frontend_name = "step size of CMA"
+data_type = "float"
+value = "0.000000001"
+unit = ""
+unit_type = ""
+
+[receiver.parameters.step_size_rde]
+frontend_name = "step size of RDE"
+data_type = "float"
+value = "0.000000001"
+unit = ""
+unit_type = ""
+
+[receiver.parameters.num_test_angle]
+frontend_name = "number of test angles"
+data_type = "int"
+value = "64"
+unit = ""
+unit_type = ""
+
+[receiver.parameters.block_size]
+frontend_name = "block size"
+data_type = "int"
+value = "100"
+unit = ""
+unit_type = ""
+
+[receiver.input]
+signals = "Fiber signals"
+prev_symbols = "Previous symbols"
+
+[receiver.output]
+signals = "Output signals"
+prev_symbols = "Previous symbols"

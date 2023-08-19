@@ -1,10 +1,27 @@
+"""
+Copyright (c) 2022 Beijing Jiaotong University
+PhotLab is licensed under [Open Source License].
+You can use this software according to the terms and conditions of the [Open Source License].
+You may obtain a copy of [Open Source License] at: [https://open.source.license/]
+
+THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
+EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
+MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
+
+See the [Open Source License] for more details.
+
+Author: Zhenjie Wei
+Created: 2023/8/19
+Supported by: National Key Research and Development Program of China
+"""
+
 import phot
 
 if __name__ == "__main__":
     """双偏振光收发模块 + 光纤信道"""
     """本代码为程序主函数 本代码主要适用于 QPSK，16QAM，32QAM，64QAM 调制格式的单载波相干背靠背（B2B）信号"""
 
-    phot.config(plot=False, backend="numpy")  # 全局开启画图，backend 使用 numpy
+    phot.config(plot=True, backend="numpy")  # 全局开启画图，backend 使用 numpy
 
     # 设置全局系统仿真参数
     num_symbols = 2**16  # 符号数目
@@ -40,13 +57,16 @@ if __name__ == "__main__":
     sampling_rate_awg = 96e9  # DAC采样率
     dac_resolution_bits = 8  # DAC的bit位数
 
-    signals = phot.dac_noise(signals, sampling_rate_awg, sampling_rate, dac_resolution_bits)
+    signals = phot.dac_noise(signals, sampling_rate_awg,
+                             sampling_rate, dac_resolution_bits)
 
     """ 加入发射端激光器产生的相位噪声 """
     linewidth_tx = 150e3  # 激光器线宽
-    signals = phot.phase_noise(signals, sampling_rate / total_baud, linewidth_tx, total_baud)
+    signals = phot.phase_noise(
+        signals, sampling_rate / total_baud, linewidth_tx, total_baud)
 
     """ 根据设置的OSNR来加入高斯白噪声 """
+
     osnr_db = 30  # 设置系统OSNR，也就是光信号功率与噪声功率的比值，此处单位为dB
     signals = phot.gaussian_noise(signals, osnr_db, sampling_rate)
 
@@ -62,45 +82,46 @@ if __name__ == "__main__":
     beta2 = 21.6676e-24
     gamma = 1.3
 
-    signals, signals_power = phot.fiber(signals, sampling_rate, num_spans, beta2, delta_z, gamma, alpha, span_length)
+    # signals, signals_power = phot.fiber(signals, sampling_rate, num_spans, beta2, delta_z, gamma, alpha, span_length)
+    signals_power = phot.signal_power(signals)
 
     """ 添加接收端激光器产生的相位噪声 """
     linewidth_rx = 150e3  # 激光器线宽
-    signals = phot.phase_noise(signals, sampling_rate / total_baud, linewidth_rx, total_baud)
+    signals = phot.phase_noise(
+        signals, sampling_rate / total_baud, linewidth_rx, total_baud)
 
     """ 添加收发端激光器造成的频偏，就是发射端激光器和接收端激光器的中心频率的偏移差 """
+
     frequency_offset = 2e9  # 设置频偏，一般激光器的频偏范围为 -3G~3G Hz
+
     signals = phot.add_freq_offset(signals, frequency_offset, sampling_rate)
 
     """ 模拟接收机造成的I/Q失衡，主要考虑幅度失衡和相位失衡，这里将两者都加在虚部上 """
+
     signals = phot.add_iq_imbalance(signals)
 
     """ 加入ADC的量化噪声 """
     adc_sample_rate = 160e9  # ADC采样率
     adc_resolution_bits = 8  # ADC的bit位数
 
-    signals = phot.adc_noise(signals, sampling_rate, adc_sample_rate, adc_resolution_bits)
+    signals = phot.adc_noise(signals, sampling_rate,
+                             adc_sample_rate, adc_resolution_bits)
 
     """ IQ正交化补偿，就是将之前的I/Q失衡的损伤补偿回来 """
-    signals = phot.iq_compensation(signals, signals_power, sampling_rate, beta2, num_spans, span_length)
+    signals = phot.iq_compensation(
+        signals, signals_power, sampling_rate, beta2, num_spans, span_length)
 
-    """ 
-    粗糙的频偏估计和补偿，先进行一个频偏的补偿，
-    因为后面有一个帧同步，而帧同步之前需要先对频偏进行补偿，否则帧同步不正确
-    """
+    """ 粗糙的频偏估计和补偿，先进行一个频偏的补偿，因为后面有一个帧同步，而帧同步之前需要先对频偏进行补偿，否则帧同步不正确 """
     signals = phot.freq_offset_compensation(signals, sampling_rate)
 
     """ 接收端相应的RRC脉冲整形，具体的参数代码与发射端的RRC滤波器是一致的 """
     signals = shaper.rx_shape(signals)
 
     """ 帧同步，寻找与发射端原始信号头部对应的符号 """
-    signals, prev_symbols = phot.sync_frame(signals, prev_symbols, up_sampling_factor)
+    signals, prev_symbols = phot.sync_frame(
+        signals, prev_symbols, up_sampling_factor)
 
-    """ 
-    自适应均衡，此处采用恒模算法（CMA）对收敛系数进行预收敛，
-    再拿收敛后的滤波器系数对正式的信号使用半径定向算法（RDE）进行均衡收敛，
-    总的思想采用梯度下降法 
-    """
+    """ 自适应均衡，此处采用恒模算法（CMA）对收敛系数进行预收敛，再拿收敛后的滤波器系数对正式的信号使用半径定向算法（RDE）进行均衡收敛，总的思想采用梯度下降法 """
 
     num_tap = 25  # 均衡器抽头数目，此处均衡器内部是采用FIR滤波器，具体可查阅百度或者论文，
     ref_power_cma = 2  # 设置CMA算法的模
@@ -120,10 +141,7 @@ if __name__ == "__main__":
         total_baud,
     )
 
-    """ 
-    均衡后进行精确的频偏估计和补偿 采用FFT-FOE算法，
-    与前面的粗估计一样，防止前面粗估计没补偿完全，此处做一个补充 
-    """
+    """ 均衡后进行精确的频偏估计和补偿 采用FFT-FOE算法，与前面的粗估计一样，防止前面粗估计没补偿完全，此处做一个补充 """
     signals = phot.freq_offset_compensation(signals, total_baud)
 
     """ 相位恢复  采用盲相位搜索算法（BPS）进行相位估计和补偿 """
@@ -131,7 +149,8 @@ if __name__ == "__main__":
     num_test_angle = 64  # BPS算法的测试角数目，具体算法原理可以参考函数内部给的参考文献
     block_size = 100  # BPS算法的块长设置
 
-    signals = phot.bps_restore(signals, num_test_angle, block_size, bits_per_symbol)
+    signals = phot.bps_restore(
+        signals, num_test_angle, block_size, bits_per_symbol)
 
     # 分析器画星座图
     phot.constellation_diagram(signals)
@@ -142,4 +161,5 @@ if __name__ == "__main__":
     """ 此处开始计算误码率 """
 
     # 返回误码率和 Q 影响因子
-    ber, q_factor = phot.bits_error_count(signals, prev_symbols, bits_per_symbol)
+    ber, q_factor = phot.bits_error_count(
+        signals, prev_symbols, bits_per_symbol)

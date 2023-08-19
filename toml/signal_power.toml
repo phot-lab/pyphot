@@ -1,0 +1,21 @@
+[signal_power]
+
+is_class = false
+frontend_name = "signal_power"
+description = "信号功率"
+is_analyzer = false
+
+[signal_power.parameters]
+
+[signal_power.parameters.power_dbm_set]
+frontend_name = "Power dbm set"
+data_type = "int"
+value = "-6"
+unit = ""
+unit_type = ""
+
+[signal_power.input]
+signals = "Input signals"
+
+[signal_power.output]
+power = "Signals Power"
